@@ -4,6 +4,7 @@ node_modules
 .vscode
 coverage/**
 dist
+logs/**
 
 .env
 .env.development
