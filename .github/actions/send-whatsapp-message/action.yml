@@ -1,0 +1,29 @@
+name: 'Send WhatsApp Message'
+description: 'Sends a WhatsApp message via Twilio'
+inputs:
+  account-sid:
+    description: 'Twilio Account SID'
+    required: true
+  auth-token:
+    description: 'Twilio Auth Token'
+    required: true
+  from-number:
+    description: 'Twilio Phone Number'
+    required: true
+  to-number:
+    description: 'Recipient WhatsApp Number'
+    required: true
+  message:
+    description: 'Message to send'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Send WhatsApp Message
+      shell: bash
+      run: |
+        curl -X POST "https://api.twilio.com/2010-04-01/Accounts/${{ inputs.account-sid }}/Messages.json" \
+        --data-urlencode "From=${{ inputs.from-number }}" \
+        --data-urlencode "Body=${{ inputs.message }}" \
+        --data-urlencode "To=${{ inputs.to-number }}" \
+        -u ${{ inputs.account-sid }}:${{ inputs.auth-token }}

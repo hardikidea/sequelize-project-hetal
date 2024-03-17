@@ -14,7 +14,11 @@ sequelize = new Sequelize(
   dbConfig.database!,
   dbConfig.username!,
   dbConfig.password,
-  dbConfig
+  {
+    host: dbConfig.host,
+    dialect: dbConfig.dialect,
+    logging: false,
+  }
 );
 
 const dBase: { [key: string]: any } = {};

@@ -1,0 +1,185 @@
+name: Build Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  SLACK_CHANNEL: C06DMKPHNUR
+
+jobs:
+  slack:
+    name: Pre-run Hook
+    runs-on: ubuntu-latest
+    environment:
+      name: common
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Send WhatsApp Notification
+        uses: ./.github/actions/send-whatsapp-message
+        with:
+          account-sid: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          auth-token: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          from-number: ${{ secrets.TWILIO_PHONE_NUMBER }}
+          to-number: ${{ secrets.WHATSAPP_NUMBER }}
+          message: ':loudspeaker: Pipeline has been triggered for PR ${{ github.event.number }} by ${{ github.actor }}: Title: ${{ github.event.pull_request.title }}'
+
+  # test:
+  #   name: Build, Test & Sonarscan
+  #   runs-on: ubuntu-latest
+  #   needs: slack
+  #   environment:
+  #     name: common
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+  #     - name: Setup Node.js environment
+  #       uses: actions/setup-node@v3.8.2
+  #       with:
+  #         registry-url: 'https://npm.pkg.github.com'
+  #         node-version: '16.15.1'
+  #     - name: NPM Cache
+  #       id: npm-cache
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: '**/node_modules'
+  #         key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-npm
+  #     - name: Install Dependencies
+  #       if: steps.npm-cache.outputs.cache-hit != 'true'
+  #       run: npm install
+  #     - name: Check Build
+  #       run: CI=false npm run build:product
+  #     - name: Send WhatsApp Notification
+  #       uses: ./.github/actions/send-whatsapp-message
+  #       with:
+  #         account-sid: ${{ secrets.TWILIO_ACCOUNT_SID }}
+  #         auth-token: ${{ secrets.TWILIO_AUTH_TOKEN }}
+  #         from-number: ${{ secrets.TWILIO_PHONE_NUMBER }}
+  #         to-number: ${{ secrets.WHATSAPP_NUMBER }}
+  #         message: "Started Testing :hammer_and_pick:"
+  #     - name: Run Test
+  #       run: set -o pipefail && npm run test:coverage | tee ./coverage.txt
+  #     - name: Comment Jest Coverage
+  #       if: always()
+  #       uses: MishaKav/jest-coverage-comment@main
+  #       with:
+  #         coverage-path: ./coverage.txt
+  #     - name: Send WhatsApp Notification
+  #       uses: ./.github/actions/send-whatsapp-message
+  #       with:
+  #         account-sid: ${{ secrets.TWILIO_ACCOUNT_SID }}
+  #         auth-token: ${{ secrets.TWILIO_AUTH_TOKEN }}
+  #         from-number: ${{ secrets.TWILIO_PHONE_NUMBER }}
+  #         to-number: ${{ secrets.WHATSAPP_NUMBER }}
+  #         message: "Completed Testing :fire:, Results are available <${{ github.event.pull_request._links.html.href }} | here> :zap:"
+  #     - name: Send WhatsApp Notification
+  #       uses: ./.github/actions/send-whatsapp-message
+  #       with:
+  #         account-sid: ${{ secrets.TWILIO_ACCOUNT_SID }}
+  #         auth-token: ${{ secrets.TWILIO_AUTH_TOKEN }}
+  #         from-number: ${{ secrets.TWILIO_PHONE_NUMBER }}
+  #         to-number: ${{ secrets.WHATSAPP_NUMBER }}
+  #         message: "Started Sonar Scan :radar:"
+  #     - name: Sonar Scan
+  #       uses: sonarsource/sonarqube-scan-action@master
+  #       env:
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+  #       with:
+  #         args: >
+  #           -Dsonar.branch.name=${{ github.ref_name }}
+  #     - name: SonarQube Quality Gate check
+  #       id: sonarqube-quality-gate-check
+  #       uses: sonarsource/sonarqube-quality-gate-action@master
+  #       timeout-minutes: 5
+  #       env:
+  #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+  #     - name: Send WhatsApp Notification
+  #       uses: ./.github/actions/send-whatsapp-message
+  #       with:
+  #         account-sid: ${{ secrets.TWILIO_ACCOUNT_SID }}
+  #         auth-token: ${{ secrets.TWILIO_AUTH_TOKEN }}
+  #         from-number: ${{ secrets.TWILIO_PHONE_NUMBER }}
+  #         to-number: ${{ secrets.WHATSAPP_NUMBER }}
+  #         message: "Completed Sonar Scan :scientist:, Results are available <${{ secrets.SONAR_HOST_URL }} | here> :magic_wand:"
+
+  # scan:
+  #   name: Security Scan
+  #   runs-on: ubuntu-latest
+  #   needs: ["slack"]
+  #   environment: 
+  #     name: common
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #     - name: Send Slack Message
+  #       uses: archive/github-actions-slack@master
+  #       with:
+  #         slack-function: send-message
+  #         slack-bot-user-oauth-access-token: ${{ secrets.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}
+  #         slack-channel: ${{ fromJson(needs.slack.outputs.slack-thread).response.channel }}
+  #         slack-text: "Started scanning code with Trivy :mag:"
+  #         slack-optional-thread_ts: ${{ fromJson(needs.slack.outputs.slack-thread).response.message.ts }}
+  #     - name: Run Trivy vulnerability scanner in repo mode
+  #       uses: aquasecurity/trivy-action@master
+  #       with:
+  #         scan-type: 'fs'
+  #         ignore-unfixed: true
+  #         format: 'table'
+  #         output: 'trivy-results-temp'
+  #         exit-code: '1'
+  #         severity: 'CRITICAL,HIGH'
+  #     - name: Change formatting for PR
+  #       if: always()
+  #       run: |
+  #           echo "# Trivy Scanner Result" > pr-results.md
+  #           echo "<pre>" >> pr-results.md
+  #           cat trivy-results-temp >> pr-results.md
+  #           echo "</pre>" >> pr-results.md
+  #     - name: Publish Trivy Result on PR
+  #       if: always() && github.event_name == 'pull_request'
+  #       uses: thollander/actions-comment-pull-request@v2
+  #       with:
+  #         filePath: pr-results.md
+  #         comment_tag: trivy
+  #     - name: Send Slack Message
+  #       uses: archive/github-actions-slack@master
+  #       with:
+  #         slack-function: send-message
+  #         slack-bot-user-oauth-access-token: ${{ secrets.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}
+  #         slack-channel: ${{ fromJson(needs.slack.outputs.slack-thread).response.channel }}
+  #         slack-text: "Scanned code with Trivy, Results are available <${{ github.event.pull_request._links.html.href }} | here> :rotating_light:"
+  #         slack-optional-thread_ts: ${{ fromJson(needs.slack.outputs.slack-thread).response.message.ts }}        
+
+  # check-job-status:
+  #   name: Post-run hook
+  #   needs: ["slack", "test", "scan"]
+  #   if: ${{ always() }}
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: common
+  #   steps:
+  #     - name: Send Slack Message
+  #       if: ${{ contains(needs.*.result, 'failure') }}
+  #       uses: archive/github-actions-slack@master
+  #       with:
+  #         slack-function: update-message
+  #         slack-bot-user-oauth-access-token: ${{ secrets.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}
+  #         slack-channel: ${{ fromJson(needs.slack.outputs.slack-thread).response.channel }}
+  #         slack-update-message-text: ":x: UI Build Failed for <${{ github.event.pull_request._links.html.href }} | PR ${{ github.event.number }}> by *${{ github.actor }}*:technologist:, Title: *${{ github.event.pull_request.title }}* :rocket:"
+  #         slack-update-message-ts: ${{ fromJson(needs.slack.outputs.slack-thread).response.message.ts }}
+  #     - name: Send Slack Message
+  #       if: ${{ !contains(needs.*.result, 'failure') }}
+  #       uses: archive/github-actions-slack@master
+  #       with:
+  #         slack-function: update-message
+  #         slack-bot-user-oauth-access-token: ${{ secrets.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}
+  #         slack-channel: ${{ fromJson(needs.slack.outputs.slack-thread).response.channel }}
+  #         slack-update-message-text: ":white_check_mark: UI Build Succeeded for <${{ github.event.pull_request._links.html.href }} | PR ${{ github.event.number }}> by *${{ github.actor }}*:technologist:, Title: *${{ github.event.pull_request.title }}* :rocket:"
+  #         slack-update-message-ts: ${{ fromJson(needs.slack.outputs.slack-thread).response.message.ts }}
