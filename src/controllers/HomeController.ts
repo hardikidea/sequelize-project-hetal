@@ -1,18 +1,18 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response } from 'express'
 
 export class HomeController {
-  public router: Router;
+  public router: Router
 
-	constructor() {
-    this.router = Router();
-		this.initRoutes();
-	}
+  constructor() {
+    this.router = Router()
+    this.initRoutes()
+  }
 
   public initRoutes(): void {
-    this.router.get('/', this.index);
-	}
+    this.router.get('/', this.index)
+  }
 
   index(req: Request, res: Response): void {
-    res.status(200).json('Hello, World!');
+    res.status(200).json('Hello, World!')
   }
 }
