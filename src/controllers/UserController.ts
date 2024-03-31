@@ -1,38 +1,34 @@
 // src/controllers/UserController.ts
-import { Router, Request, Response, NextFunction } from 'express';
-import { CustomError } from '../utils/CustomError';
-import { asyncHandler } from '../utils/asyncHandler';
-import { authenticate } from '../middlewares/auth.middleware';
+import { Router, Request, Response, NextFunction } from 'express'
+import { CustomError } from '../utils/CustomError'
+import { asyncHandler } from '../utils/asyncHandler'
+import { authenticate } from '../middlewares/auth.middleware'
 // import { User, users } from '../models/User';
 
 export class UserController {
-  public router: Router;
+  public router: Router
 
-	constructor() {
-    this.router = Router();
-		this.initRoutes();
-	}
+  constructor() {
+    this.router = Router()
+    this.initRoutes()
+  }
 
   private initRoutes(): void {
-    this.router.get('/users', authenticate, this.getAllUsers);
-		this.router.get('/users/:id', authenticate, this.getUserById);
+    this.router.get('/users', authenticate, this.getAllUsers)
+    this.router.get('/users/:id', authenticate, this.getUserById)
 
-		this.router.get('/users-async', asyncHandler(this.getAllUsersAsync));
-		this.router.get('/users-async/:id', asyncHandler(this.getUserByIdAsync));
-	}
+    this.router.get('/users-async', asyncHandler(this.getAllUsersAsync))
+    this.router.get('/users-async/:id', asyncHandler(this.getUserByIdAsync))
+  }
 
   getAllUsers(req: Request, res: Response): void {
     // res.json(users);
   }
 
-  getAllUsersAsync = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  getAllUsersAsync = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     // // Async logic here
     // res.json(users);
-  };
+  }
 
   getUserById(req: Request, res: Response, next: NextFunction): void {
     // const id: number = parseInt(req.params.id, 10);
@@ -44,17 +40,13 @@ export class UserController {
     // }
   }
 
-  getUserByIdAsync = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
+  getUserByIdAsync = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     // const id: number = parseInt(req.params.id, 10);
-    const user = undefined; // users.find(user => user.id === id);
+    const user = undefined // users.find(user => user.id === id);
 
-		if (!user) {
-      throw new CustomError('User not found', 404);
-		}
-    res.json(user);
-	};
+    if (!user) {
+      throw new CustomError('User not found', 404)
+    }
+    res.json(user)
+  }
 }

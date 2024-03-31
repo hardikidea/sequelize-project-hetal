@@ -1,23 +1,17 @@
-import {
-  Model,
-  DataTypes,
-  InferAttributes,
-  InferCreationAttributes,
-  CreationOptional,
-} from 'sequelize';
-import { sequelize } from './database-model';
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize'
+import { sequelize } from './database-model'
 
 // Define the User model
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   // Use CreationOptional for attributes that are optional at creation time
-  declare id: CreationOptional<number>;
-	declare username: string;
-	declare email: string;
-	declare password: string;
+  declare id: CreationOptional<number>
+  declare username: string
+  declare email: string
+  declare password: string
 
-	// Automatically managed timestamps, optionally declared for TypeScript
-	declare createdAt: CreationOptional<Date>;
-	declare updatedAt: CreationOptional<Date>;
+  // Automatically managed timestamps, optionally declared for TypeScript
+  declare createdAt: CreationOptional<Date>
+  declare updatedAt: CreationOptional<Date>
 }
 
 // Initialize the model with attribute definitions and options
@@ -48,5 +42,5 @@ User.init(
     sequelize: sequelize,
     tableName: 'users',
     timestamps: true,
-  }
-);
+  },
+)

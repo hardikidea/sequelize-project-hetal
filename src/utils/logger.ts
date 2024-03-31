@@ -1,5 +1,5 @@
 // src/utils/logger.ts
-import winston from 'winston';
+import winston from 'winston'
 
 // Define your custom settings for each transport
 const options: winston.LoggerOptions = {
@@ -7,10 +7,7 @@ const options: winston.LoggerOptions = {
   transports: [
     // Console transport
     new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      ),
+      format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
     }),
     // File transport
     new winston.transports.File({
@@ -18,9 +15,9 @@ const options: winston.LoggerOptions = {
       dirname: 'logs', // Specify your logs directory
     }),
   ],
-};
+}
 
 // Create a Winston logger that streams to different outputs based on the defined options
-const logger = winston.createLogger(options);
+const logger = winston.createLogger(options)
 
-export default logger;
+export default logger

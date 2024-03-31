@@ -1,11 +1,11 @@
-import { Dialect } from 'sequelize/types';
+import { Dialect } from 'sequelize/types'
 
 interface DatabaseConfig {
-  username: string;
-  password: string;
-  database: string;
-  host: string;
-  dialect: Dialect;
+  username: string
+  password: string
+  database: string
+  host: string
+  dialect: Dialect
 }
 
 const config: { [key: string]: DatabaseConfig } = {
@@ -30,6 +30,6 @@ const config: { [key: string]: DatabaseConfig } = {
     host: process.env.DB_HOST || 'localhost',
     dialect: (process.env.DB_DIALECT as Dialect) || 'postgres',
   },
-};
+}
 
-export default config;
+export default config
