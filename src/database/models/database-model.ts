@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { Sequelize, DataTypes } from 'sequelize'
+import { Sequelize } from 'sequelize'
 import config from '../config/config' // Adjust the import based on your actual config path
 
 const basename: string = path.basename(__filename)
@@ -17,7 +17,7 @@ sequelize = new Sequelize(dbConfig.database!, dbConfig.username!, dbConfig.passw
 })
 
 const dBase: { [key: string]: any } = {}
-
+console.log(__dirname, 'dir')
 fs.readdirSync(__dirname)
   .filter((file: string) => {
     return file.indexOf('.') !== 0 && file !== basename && file.slice(-3) === '.ts' && !file.endsWith('.test.ts')
@@ -25,6 +25,7 @@ fs.readdirSync(__dirname)
   .forEach((file: string) => {
     const model = require(path.join(__dirname, file)) //.default(sequelize, DataTypes);
     dBase[model.name] = model
+    console.log(model.name)
   })
 
 Object.keys(dBase).forEach((modelName: string) => {
