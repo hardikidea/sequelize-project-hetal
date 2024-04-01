@@ -17,7 +17,7 @@ export class ServerApplication {
   public baseRouter: string = '/api'
   constructor() {
     this.expressApp = express()
-    ValidateAuthentication(true)
+    ValidateAuthentication(false)
     this.mountMiddlewares()
     this.mountRoutes()
   }

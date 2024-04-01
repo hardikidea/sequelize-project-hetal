@@ -2,13 +2,14 @@
   "compilerOptions": {
     "baseUrl": ".", // This must be specified if "paths" is.
     "paths": {
-      "@config": ["src/database/config"],
-      "@models": ["src/database/models"],
-      "@seeders": ["src/database/seeders"],
-      "@migrations": ["src/database/migrations"],
-      "@controllers": ["src/controllers"],
-      "@middlewares": ["src/middlewares"]
-      // Add other paths here
+      "@config/*": ["src/database/config/*"],
+      "@models/*": ["src/database/models/*"],
+      "@seeders/*": ["src/database/seeders/*"],
+      "@migrations/*": ["src/database/migrations/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@middlewares/*": ["src/middlewares/*"],
+      "@utils/*": ["src/utils/*"],
+      "*": ["src/*"]
     },
     "target": "ES6",
     "module": "commonjs",
@@ -29,7 +30,9 @@
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]
