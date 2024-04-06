@@ -9,6 +9,8 @@
       "@controllers/*": ["src/controllers/*"],
       "@middlewares/*": ["src/middlewares/*"],
       "@utils/*": ["src/utils/*"],
+      "@repositorys/*": ["src/repository/*"],
+      "@services/*": ["src/service/*"],
       "*": ["src/*"]
     },
     "target": "ES6",

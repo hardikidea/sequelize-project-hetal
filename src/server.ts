@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 
 import { HomeController } from './controllers/HomeController'
-import { UserController } from './controllers/UserController'
+import UserController from '@controllers/UserController'
 import { CustomError } from './utils/CustomError'
 import { Request, Response } from 'express'
 import { AuthController } from './controllers/AuthController'
@@ -43,12 +43,11 @@ export class ServerApplication {
 
   private mountRoutes(): void {
     const homeController = new HomeController()
-    const userController = new UserController()
     const authController = new AuthController()
 
     this.expressApp.use(this.getRouterURL('/auth'), authController.router)
     this.expressApp.use(this.getRouterURL('/home'), homeController.router)
-    this.expressApp.use(this.getRouterURL('/user'), userController.router)
+    this.expressApp.use(this.getRouterURL('/user'), UserController.router)
 
     // Global error handler
     this.globalErrorHandler(this.expressApp)
