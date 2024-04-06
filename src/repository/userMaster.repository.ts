@@ -17,15 +17,16 @@ class UserMasterRepository extends GenericRepository<UserMaster> {
         return UserMasterRepository.instance;
     }
 
-    public sayHello =  () => {
-        try {
-            return 'sayHello'
-        } catch (error) {
-            console.error(error);
-            throw new Error('Error fetching all items');
-        }
-    }
+    // public sayHello =  () => {
+    //     try {
+    //         return 'sayHello'
+    //     } catch (error) {
+    //         console.error(error);
+    //         throw new Error('Error fetching all items');
+    //     }
+    // }
+
   }
 
-  export const userMasterRepository = UserMasterRepository.getInstance();
-//   export default UserMasterRepository.getInstance();
+//   export const userMasterRepository = UserMasterRepository.getInstance();
+  export default UserMasterRepository.getInstance();

@@ -1,9 +1,8 @@
 // src/controllers/UserController.ts
 import { Router, Request, Response, NextFunction } from 'express'
 import { CustomError } from '../utils/CustomError'
-import { asyncHandler } from '../utils/asyncHandler'
-import { authenticate } from '@middlewares/auth.middleware'
-import UserMasterService from '@services/userMaster.service'
+import { AuthenticateMiddleware } from '@middlewares/auth.middleware'
+import { UserMasterService } from '@service/index'
 
 class UserController {
   public router: Router
@@ -23,15 +22,9 @@ class UserController {
   }
 
   private initRoutes(): void {
-    this.router.get('/users', authenticate, this.getAllUsers)
-    this.router.get('/users/:id', authenticate, this.getUserById)
-    this.router.delete('/users/:id', authenticate, this.removeUserById)
-  }
-
-
-  getAllUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-     await this.userMasterService.fetchUserAllData();
-     res.json(await this.userMasterService.fetchUserAllData());
+    this.router.get('/users', AuthenticateMiddleware, this.getAllUserInformation)
+    this.router.get('/users/:id', AuthenticateMiddleware, this.getUserById)
+    this.router.delete('/users/:id', AuthenticateMiddleware, this.removeUserById)
   }
 
   async getUserById(req: Request, res: Response, next: NextFunction) {
@@ -46,16 +39,37 @@ class UserController {
     }
   }
 
-  async removeUserById(req: Request, res: Response, next: NextFunction) {
+  async removeUserById(request: Request, response: Response, next: NextFunction) {
     
-    const id: number = parseInt(req.params.id, 0);
+    const id: number = parseInt(request.params.id, 0);
     const isRemoved = await this.userMasterService.removeUserById(id);
 
     if (isRemoved) {
-      res.status(200).json({ status: 200, data: `User[${id}] removed successfully` });
+      response.status(200).json({ status: 200, data: `User[${id}] removed successfully` });
     } else {
       next(new CustomError(404, 'User not found'));
     }
+  }
+
+  async getAllUserInformation(request: Request, response: Response, next: NextFunction) {
+    if (request.query.page && request.query.limit) {
+      const page = parseInt(request.query.page as string, 10) || 1;
+      const limit = parseInt(request.query.limit as string, 10) || 10;
+      const offset = (page - 1) * limit;
+  
+      try {
+          const dataItems = await this.userMasterService.fetchUserPagination(offset, limit);
+          response.status(200).send({ ...dataItems, currentPage: page});
+          
+      } catch (error) {
+          console.error('Error fetching users:', error);
+          response.status(500).send('Internal Server Error');
+      }
+    } else {
+      await this.userMasterService.fetchUserAllData();
+      response.json(await this.userMasterService.fetchUserAllData());
+    }
+    
   }
 }
 

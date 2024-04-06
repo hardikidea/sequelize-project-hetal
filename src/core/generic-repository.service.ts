@@ -1,7 +1,7 @@
-// src/repositories/AbstractRepository.ts
 import { Model, ModelCtor } from 'sequelize-typescript';
 import { IRepository } from './IRepository.interface';
 import { FindOptions, WhereOptions } from 'sequelize';
+import { IPagination } from 'interface/IPagination.interface';
 
 export abstract class GenericRepository<T extends Model<T>> implements IRepository<T> {
   constructor(protected model: ModelCtor<T>) {}
@@ -60,6 +60,16 @@ export abstract class GenericRepository<T extends Model<T>> implements IReposito
     } catch (error) {
       console.error(error);
       throw new Error(`Error deleting item with id ${id}`);
+    }
+  }
+
+  async findAndCountAll(options: FindOptions): Promise<IPagination<T>> {
+    try {
+      const { count, rows } = await this.model.findAndCountAll(options);
+      return { rows, count, totalPages: Math.ceil(count / options.limit!)  };
+    } catch (error) {
+      console.error(error);
+      throw new Error('Error fetching all items');
     }
   }
 
