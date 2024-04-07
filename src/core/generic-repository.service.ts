@@ -1,11 +1,11 @@
-import { Model, ModelCtor } from 'sequelize-typescript'
+import { Model } from 'sequelize'
 import { IRepository } from './IRepository.interface'
 import { FindOptions, WhereOptions } from 'sequelize'
 import { IPagination } from '../interface/IPagination.interface'
 
 
 export abstract class GenericRepository<T extends Model<T>> implements IRepository<T> {
-  constructor(protected model: ModelCtor<T>) {}
+  constructor(protected model: typeof Model & { new (): T }) {}
   async find(findOptions?: FindOptions): Promise<T | null> {
     try {
       if (findOptions) return await this.model.findOne(findOptions)

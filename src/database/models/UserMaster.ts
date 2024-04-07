@@ -1,40 +1,45 @@
-import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript'
-import { UserSecurityGroupMaster } from './index'
+import { Model, DataTypes, CreationOptional } from 'sequelize';
+import { sequelize } from './sync-model';
 
-@Table({
-  timestamps: true,
-})
-export default class UserMaster extends Model<UserMaster> {
-  @Column({
-    type: DataType.INTEGER,
-    primaryKey: true,
+class UserMaster extends Model {
+  declare id: CreationOptional<number>; // Marks `id` as optional in creation because it's auto-incremented
+  declare email: string;
+  declare password: string;
+  declare isActive: CreationOptional<boolean>; // Marks `isActive` as optional in creation because it has a default value
+}
+
+UserMaster.init({
+  id: {
+    type: DataTypes.INTEGER.UNSIGNED,
     autoIncrement: true,
+    primaryKey: true,
     allowNull: false,
-  })
-  id!: number
-
-  @Column({
-    type: DataType.STRING,
+  },
+  email: {
+    type: DataTypes.STRING,
     allowNull: false,
     unique: true,
     validate: {
       isEmail: true,
+      notEmpty: true,
     },
-  })
-  email!: string
-
-  @Column({
-    type: DataType.STRING,
+  },
+  password: {
+    type: DataTypes.STRING,
     allowNull: false,
-  })
-  password!: string
-
-  @Column({
-    type: DataType.BOOLEAN,
+    validate: {
+      notEmpty: true,
+    },
+  },
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
     defaultValue: true,
-  })
-  isActive!: boolean
+  },
+}, {
+  sequelize,
+  modelName: 'UserMaster',
+  freezeTableName: true,
+});
 
-  @HasMany(() => UserSecurityGroupMaster)
-  userSecurityGroups!: UserSecurityGroupMaster[]
-}
+export default UserMaster;

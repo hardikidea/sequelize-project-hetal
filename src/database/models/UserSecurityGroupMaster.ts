@@ -1,28 +1,39 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript'
-import { UserMaster, SecurityGroupMaster } from './index'
+import { Model, DataTypes, CreationOptional } from 'sequelize';
+import { sequelize } from './sync-model';
 
-@Table({
-  timestamps: true,
-})
-export default class UserSecurityGroupMaster extends Model<UserSecurityGroupMaster> {
-  @Column({
-    type: DataType.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  })
-  id!: number
-
-  @ForeignKey(() => UserMaster)
-  @Column(DataType.INTEGER)
-  userId!: number
-
-  @BelongsTo(() => UserMaster)
-  user!: UserMaster
-
-  @ForeignKey(() => SecurityGroupMaster)
-  @Column(DataType.INTEGER)
-  securityGroupId!: number
-
-  @BelongsTo(() => SecurityGroupMaster)
-  securityGroup!: SecurityGroupMaster
+class UserSecurityGroupMaster extends Model {
+  declare id: CreationOptional<number>;
+  declare userId: number;
+  declare securityGroupId: number;
+  declare isActive: CreationOptional<boolean>;
 }
+
+UserSecurityGroupMaster.init({
+  id: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    autoIncrement: true,
+    primaryKey: true,
+    allowNull: false,
+  },
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    unique: true,
+  },
+  securityGroupId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    // unique: true,
+  },
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  },
+}, {
+  sequelize,
+  modelName: 'UserSecurityGroupMaster',
+  freezeTableName: true,
+});
+
+export default UserSecurityGroupMaster;

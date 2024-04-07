@@ -1,32 +1,38 @@
-import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript'
-import { UserSecurityGroupMaster } from './index'
+import { Model, DataTypes, CreationOptional } from 'sequelize';
+import { sequelize } from './sync-model';
 
-@Table({
-  timestamps: true,
-})
-export default class SecurityGroupMaster extends Model<SecurityGroupMaster> {
-  @Column({
-    type: DataType.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  })
-  id!: number
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  name!: string
-
-  @Column(DataType.TEXT)
-  description!: string
-
-  @Column({
-    type: DataType.BOOLEAN,
-    defaultValue: true,
-  })
-  isActive!: boolean
-
-  @HasMany(() => UserSecurityGroupMaster)
-  userSecurityGroup!: UserSecurityGroupMaster[]
+class SecurityGroupMaster extends Model {
+  declare id: CreationOptional<number>;
+  declare name: string;
+  declare description: string;
+  declare isActive: CreationOptional<boolean>;
 }
+
+SecurityGroupMaster.init({
+  id: {
+    type: DataTypes.INTEGER.UNSIGNED,
+    autoIncrement: true,
+    primaryKey: true,
+    allowNull: false,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  description: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  },
+}, {
+  sequelize,
+  modelName: 'SecurityGroupMaster',
+  freezeTableName: true,
+});
+
+export default SecurityGroupMaster;
