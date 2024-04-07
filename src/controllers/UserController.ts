@@ -1,14 +1,12 @@
 // src/controllers/UserController.ts
 import { Router, Request, Response, NextFunction } from 'express'
 import { CustomError } from '../utils/CustomError'
-
-import { AuthenticateMiddleware } from '../middlewares/auth.middleware'
 import { UserMasterService } from '../service/userMaster.service'
 
 class UserController {
   public router: Router
   
-  private constructor(private userMasterService = UserMasterService.getInstance()) {
+  private constructor() {
     this.router = Router()
     this.initRoutes()
   }
@@ -23,14 +21,14 @@ class UserController {
   }
 
   private initRoutes(): void {
-    this.router.get('/users', AuthenticateMiddleware, this.getAllUserInformation)
-    this.router.get('/users/:id', AuthenticateMiddleware, this.getUserById)
-    this.router.delete('/users/:id', AuthenticateMiddleware, this.removeUserById)
+    this.router.get('/', this.getAllUserInformation)
+    this.router.get('/:id', this.getUserById)
+    this.router.delete('/:id', this.removeUserById)
   }
 
   async getUserById(req: Request, res: Response, next: NextFunction) {
     const id: number = parseInt(req.params.id, 0)
-    const userInfo = await this.userMasterService.fetchUserById(id)
+    const userInfo = await UserMasterService.getInstance().fetchUserById(id)
 
     if (userInfo) {
       res.status(200).json({ status: 200, data: userInfo })
@@ -41,7 +39,7 @@ class UserController {
 
   async removeUserById(request: Request, response: Response, next: NextFunction) {
     const id: number = parseInt(request.params.id, 0)
-    const isRemoved = await this.userMasterService.removeUserById(id)
+    const isRemoved = await UserMasterService.getInstance().removeUserById(id)
 
     if (isRemoved) {
       response.status(200).json({ status: 200, data: `User[${id}] removed successfully` })
@@ -57,17 +55,25 @@ class UserController {
       const offset = (page - 1) * limit
 
       try {
-        const dataItems = await this.userMasterService.fetchUserPagination(offset, limit)
+        const dataItems = await UserMasterService.getInstance().fetchUserPagination(offset, limit)
         response.status(200).send({ ...dataItems, currentPage: page })
       } catch (error) {
         console.error('Error fetching users:', error)
         response.status(500).send('Internal Server Error')
       }
     } else {
-      await this.userMasterService.fetchUserAllData()
-      response.json(await this.userMasterService.fetchUserAllData())
+      try {
+        const usersInformation = await UserMasterService.getInstance().fetchUserAllData()
+        response.status(200).json({ status: 200, data: usersInformation })
+      } catch (error) {
+        if(error instanceof CustomError) {
+          response.status(error.statusCode).send({ status: error.statusCode, message: error.message})
+        } else {
+          response.status(500).send(error)
+        }
+      }
     }
   }
 }
 
-export default UserController.getInstance()
+export default UserController

@@ -1,5 +1,7 @@
 import { Model, DataTypes, CreationOptional } from 'sequelize';
 import { sequelize } from './sync-model';
+import UserMaster from './UserMaster';
+import SecurityGroupMaster from './SecurityGroupMaster';
 
 class UserSecurityGroupMaster extends Model {
   declare id: CreationOptional<number>;
@@ -19,10 +21,18 @@ UserSecurityGroupMaster.init({
     type: DataTypes.INTEGER,
     allowNull: false,
     unique: true,
+    references: {
+      model: UserMaster,
+      key: 'id',
+    }
   },
   securityGroupId: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    references: {
+      model: SecurityGroupMaster,
+      key: 'id',
+    }
     // unique: true,
   },
   isActive: {
@@ -35,5 +45,10 @@ UserSecurityGroupMaster.init({
   modelName: 'UserSecurityGroupMaster',
   freezeTableName: true,
 });
+
+UserMaster.hasMany(UserSecurityGroupMaster, { foreignKey: 'userId', onDelete: 'CASCADE', onUpdate: 'CASCADE'});
+SecurityGroupMaster.hasMany(UserSecurityGroupMaster, { foreignKey: 'securityGroupId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+UserSecurityGroupMaster.belongsTo(UserMaster, { foreignKey: 'userId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+UserSecurityGroupMaster.belongsTo(SecurityGroupMaster, { foreignKey: 'securityGroupId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 
 export default UserSecurityGroupMaster;

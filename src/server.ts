@@ -49,7 +49,7 @@ export class ServerApplication {
 
     this.expressApp.use(this.getRouterURL('/auth'), authController.router)
     this.expressApp.use(this.getRouterURL('/home'), homeController.router)
-    this.expressApp.use(this.getRouterURL('/user'), UserController.router)
+    this.expressApp.use(this.getRouterURL('/user'), UserController.getInstance().router)
     this.expressApp.use(this.getRouterURL('/public'), RegistrationController.getInstance().router)
 
     // Global error handler

@@ -40,6 +40,11 @@ UserMaster.init({
   sequelize,
   modelName: 'UserMaster',
   freezeTableName: true,
+  // paranoid: true, // Enable "soft deletes" for this model.
+  defaultScope: {
+    attributes: { exclude: ['password'] },
+    where: { isActive: true }
+  }
 });
 
 export default UserMaster;

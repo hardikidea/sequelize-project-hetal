@@ -3,6 +3,7 @@ import { body, validationResult } from 'express-validator'
 import _ from 'lodash';
 import { UserMasterService } from '../service';
 import { UserMaster } from '../database/models';
+import { UniqueConstraintError } from 'sequelize';
 
 
 class RegistrationController {
@@ -51,8 +52,13 @@ class RegistrationController {
         await UserMasterService.getInstance().createUser(postUserInformation)
         response.status(200).send({ status: 200, data: `[${email}] Registration done successfully.` })
       } catch (error) {
-        console.error('Error fetching users:', error)
-        response.status(500).send('Internal Server Error')
+        if(error instanceof UniqueConstraintError) {
+          const groupedByPath = _.groupBy(error.errors, 'path')
+          const result = _.mapValues(groupedByPath, (group) => group.map((error) => `[${error.value}] already exists in the database`.trim()));
+          response.status(400).send({ status: 400, error: result })
+        } else {
+          response.status(500).send('Internal Server Error')
+        }
       }
     } else {
       response.status(400).send({ status: 400, data: `Invalid Request` })

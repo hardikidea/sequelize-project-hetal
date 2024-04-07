@@ -4,6 +4,7 @@ import { UserMaster } from "../database/models"
 import { IPagination } from "../interface/IPagination.interface"
 
 import { CustomError } from "../utils/CustomError"
+import { FindOptions, UniqueConstraintError } from "sequelize"
 
 export class UserMasterService {
   private static instance: UserMasterService
@@ -18,11 +19,11 @@ export class UserMasterService {
     return UserMasterService.instance
   }
 
-  public fetchUserAllData = async () => {
+  public fetchUserAllData = async (options?: FindOptions) => {
     try {
-      return await this.userMasterRepositoryInstance.findAll()
+      return await this.userMasterRepositoryInstance.findAll(options ? options : {})
     } catch (error) {
-      throw new CustomError(400, `Error fetching all users`)
+      throw error
     }
   }
   public fetchUserPagination = async (offset: number, limit: number): Promise<IPagination<UserMaster>> => {
@@ -55,7 +56,11 @@ export class UserMasterService {
     try {
       await this.userMasterRepositoryInstance.create(userRegistration)
     } catch (error) {
-      throw new CustomError(400, `Error fetching all users`)
+      if(error instanceof UniqueConstraintError) {
+        throw error;
+      } else {
+        throw new CustomError(400, `Error fetching all users`)
+      }
     }
   }
 }

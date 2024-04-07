@@ -1,7 +1,9 @@
-import { Model } from 'sequelize'
+import { Model, UniqueConstraintError } from 'sequelize'
 import { IRepository } from './IRepository.interface'
 import { FindOptions, WhereOptions } from 'sequelize'
 import { IPagination } from '../interface/IPagination.interface'
+import _ from 'lodash'
+import { CustomError } from '../utils/CustomError'
 
 
 export abstract class GenericRepository<T extends Model<T>> implements IRepository<T> {
@@ -19,9 +21,12 @@ export abstract class GenericRepository<T extends Model<T>> implements IReposito
     try {
       if (findOptions) return await this.model.findAll(findOptions)
       return await this.model.findAll()
-    } catch (error) {
-      console.error(error)
-      throw new Error('Error fetching all items')
+    } catch (error: any) {
+      if (error?.name === 'SequelizeDatabaseError') {
+        throw new CustomError(400, error.message)
+      } else {
+        throw new Error('UnHandled: Error fetching all items')
+      }
     }
   }
 
@@ -39,8 +44,11 @@ export abstract class GenericRepository<T extends Model<T>> implements IReposito
       // No need for casting here; the type is explicitly set via the method's parameter
       return await this.model.create(item as any)
     } catch (error) {
-      console.error(error)
-      throw new Error('Error creating new item')
+      if (error instanceof UniqueConstraintError) {
+        throw error;
+      } else {
+        throw new Error('Error creating new item');
+      }
     }
   }
 
