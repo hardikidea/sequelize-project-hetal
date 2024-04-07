@@ -1,5 +1,3 @@
-import UserMasterService from "@service/userMaster.service"
+import {UserMasterService} from './userMaster.service'
 
-export {
-    UserMasterService
-}
+export { UserMasterService }

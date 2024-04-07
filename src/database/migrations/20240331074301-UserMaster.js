@@ -1,51 +1,51 @@
-'use strict';
+'use strict'
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('UserMaster', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       email: {
         type: Sequelize.STRING,
         unique: true,
-        allowNull: false
+        allowNull: false,
       },
       password: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       isActive: {
         type: Sequelize.BOOLEAN,
-        defaultValue: true
+        defaultValue: true,
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+        defaultValue: Sequelize.NOW,
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
-      }
-    });
+        defaultValue: Sequelize.NOW,
+      },
+    })
 
-  // Add trigger for `updatedAt`
-  await queryInterface.sequelize.query(`
+    // Add trigger for `updatedAt`
+    await queryInterface.sequelize.query(`
     CREATE TRIGGER update_updated_at_trigger
     BEFORE UPDATE ON "UserMaster"
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
-  `);
+  `)
   },
 
-  async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('UserMaster');
-    await queryInterface.sequelize.query(`DROP TRIGGER IF EXISTS update_updated_at_trigger ON "UserMaster";`);
-  }
-};
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('UserMaster')
+    await queryInterface.sequelize.query(`DROP TRIGGER IF EXISTS update_updated_at_trigger ON "UserMaster";`)
+  },
+}

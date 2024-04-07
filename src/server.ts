@@ -3,7 +3,6 @@ import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 
 import { HomeController } from './controllers/HomeController'
-import UserController from '@controllers/UserController'
 import { CustomError } from './utils/CustomError'
 import { Request, Response } from 'express'
 import { AuthController } from './controllers/AuthController'
@@ -11,6 +10,9 @@ import { requestLoggerMiddleware } from './middlewares/requestLogger.middleware'
 import logger from './utils/logger'
 import cors from 'cors'
 import { ValidateAuthentication } from './database'
+import UserController from './controllers/UserController'
+import RegistrationController from './controllers/Registration.controller'
+
 
 export class ServerApplication {
   public expressApp: Express
@@ -48,6 +50,7 @@ export class ServerApplication {
     this.expressApp.use(this.getRouterURL('/auth'), authController.router)
     this.expressApp.use(this.getRouterURL('/home'), homeController.router)
     this.expressApp.use(this.getRouterURL('/user'), UserController.router)
+    this.expressApp.use(this.getRouterURL('/public'), RegistrationController.getInstance().router)
 
     // Global error handler
     this.globalErrorHandler(this.expressApp)

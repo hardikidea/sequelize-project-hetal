@@ -1,59 +1,63 @@
 
-import { UserMaster } from "@models/index";
-import { UserMasterRepository } from "@repositorys/index"
-import { CustomError } from "@utils/CustomError";
-import { IPagination } from "interface/IPagination.interface";
+import { UserMasterRepository } from "../repository/userMaster.repository"
+import { UserMaster } from "../database/models"
+import { IPagination } from "../interface/IPagination.interface"
 
-class UserMasterService {
+import { CustomError } from "../utils/CustomError"
 
-    private static instance: UserMasterService;
-    
-    constructor(private userMasterRepositoryInstance = UserMasterRepository){
-    }
+export class UserMasterService {
+  private static instance: UserMasterService
+  
 
-    public static getInstance(): UserMasterService {
-        if (!UserMasterService.instance) {
-            UserMasterService.instance = new UserMasterService();
-        }
-        return UserMasterService.instance;
-    }
+  constructor(private userMasterRepositoryInstance = UserMasterRepository.getInstance()) {}
 
-    public fetchUserAllData = async () => {
-        try {
-            return await this.userMasterRepositoryInstance.findAll()
-        } catch (error) {
-            throw new CustomError(400, `Error fetching all users`)
-        }
+  public static getInstance(): UserMasterService {
+    if (!UserMasterService.instance) {
+      UserMasterService.instance = new UserMasterService()
     }
-    public fetchUserPagination = async (offset: number, limit: number): Promise<IPagination<UserMaster>> => {
-        try {
-            return await this.userMasterRepositoryInstance.findAndCountAll({ limit, offset })
-        } catch (error) {
-            throw new CustomError(400, `Error fetching all users`)
-        }
-    }
+    return UserMasterService.instance
+  }
 
-    public fetchUserById = async (userId: number) => {
-        try {
-            const userInformation = await this.userMasterRepositoryInstance.findById(userId);
-            if(userInformation){
-                return userInformation;
-            }
-        } catch (error) {
-            
-        }
+  public fetchUserAllData = async () => {
+    try {
+      return await this.userMasterRepositoryInstance.findAll()
+    } catch (error) {
+      throw new CustomError(400, `Error fetching all users`)
     }
+  }
+  public fetchUserPagination = async (offset: number, limit: number): Promise<IPagination<UserMaster>> => {
+    try {
+      return await this.userMasterRepositoryInstance.findAndCountAll({ limit, offset })
+    } catch (error) {
+      throw new CustomError(400, `Error fetching all users`)
+    }
+  }
 
-    public removeUserById = async (userId: number) => {
-        try {
-            const userInformation = await this.userMasterRepositoryInstance.delete(userId);
-            if(userInformation){
-                return userInformation;
-            }
-        } catch (error) {
-            
-        }
+  public fetchUserById = async (userId: number) => {
+    try {
+      const userInformation = await this.userMasterRepositoryInstance.findById(userId)
+      if (userInformation) {
+        return userInformation
+      }
+    } catch (error) {}
+  }
+
+  public removeUserById = async (userId: number) => {
+    try {
+      const userInformation = await this.userMasterRepositoryInstance.delete(userId)
+      if (userInformation) {
+        return userInformation
+      }
+    } catch (error) {}
+  }
+
+  public createUser = async (userRegistration: Partial<UserMaster>): Promise<void> => {
+    try {
+      await this.userMasterRepositoryInstance.create(userRegistration)
+    } catch (error) {
+      throw new CustomError(400, `Error fetching all users`)
     }
+  }
 }
 
-export default UserMasterService.getInstance();
+// export default UserMasterService.getInstance()

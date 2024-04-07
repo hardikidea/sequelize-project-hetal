@@ -1,5 +1,5 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
-import { UserMaster, SecurityGroupMaster } from "./index"
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript'
+import { UserMaster, SecurityGroupMaster } from './index'
 
 @Table({
   timestamps: true,
@@ -10,19 +10,19 @@ export default class UserSecurityGroupMaster extends Model<UserSecurityGroupMast
     primaryKey: true,
     autoIncrement: true,
   })
-  id!: number;
+  id!: number
 
   @ForeignKey(() => UserMaster)
   @Column(DataType.INTEGER)
-  userId!: number;
+  userId!: number
 
   @BelongsTo(() => UserMaster)
-  user!: UserMaster;
+  user!: UserMaster
 
   @ForeignKey(() => SecurityGroupMaster)
   @Column(DataType.INTEGER)
-  securityGroupId!: number;
+  securityGroupId!: number
 
   @BelongsTo(() => SecurityGroupMaster)
-  securityGroup!: SecurityGroupMaster;
+  securityGroup!: SecurityGroupMaster
 }

@@ -2,19 +2,20 @@
   "compilerOptions": {
     "baseUrl": ".", // This must be specified if "paths" is.
     "paths": {
-      "@config/*": ["src/database/config/*"],
-      "@models/*": ["src/database/models/*"],
-      "@seeders/*": ["src/database/seeders/*"],
-      "@migrations/*": ["src/database/migrations/*"],
-      "@controllers/*": ["src/controllers/*"],
-      "@middlewares/*": ["src/middlewares/*"],
-      "@utils/*": ["src/utils/*"],
-      "@repositorys/*": ["src/repository/*"],
-      "@service/*": ["src/service/*"],
-      "*": ["src/*"]
+      // "@config/*": ["src/database/config/*"],
+      // "@models/*": ["src/database/models/*"],
+      // "@seeders/*": ["src/database/seeders/*"],
+      // "@migrations/*": ["src/database/migrations/*"],
+      // "@controllers/*": ["src/controllers/*"],
+      // "@middlewares/*": ["src/middlewares/*"],
+      // "@utils/*": ["src/utils/*"],
+      // "@repositorys/*": ["src/repository/*"],
+      // "@service/*": ["src/service/*"],
+      // "*": ["src/*"]
     },
     "target": "ES6",
     "module": "commonjs",
+    "lib": ["es6"],
     "moduleResolution": "node",
     "types": ["node", "jest"],
     "resolveJsonModule": true,
@@ -34,7 +35,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]

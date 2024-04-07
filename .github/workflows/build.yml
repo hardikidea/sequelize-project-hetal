@@ -24,7 +24,9 @@ jobs:
           auth-token: ${{ secrets.TWILIO_AUTH_TOKEN }}
           from-number: ${{ secrets.TWILIO_PHONE_NUMBER }}
           to-number: ${{ secrets.WHATSAPP_NUMBER }}
-          message: ':loudspeaker: Pipeline has been triggered for PR ${{ github.event.number }} by ${{ github.actor }}: Title: ${{ github.event.pull_request.title }}'
+          message:
+            ':loudspeaker: Pipeline has been triggered for PR ${{ github.event.number }} by ${{ github.actor }}: Title: ${{
+            github.event.pull_request.title }}'
 
   # test:
   #   name: Build, Test & Sonarscan
@@ -113,7 +115,7 @@ jobs:
   #   name: Security Scan
   #   runs-on: ubuntu-latest
   #   needs: ["slack"]
-  #   environment: 
+  #   environment:
   #     name: common
   #   steps:
   #     - name: Checkout code
@@ -155,7 +157,7 @@ jobs:
   #         slack-bot-user-oauth-access-token: ${{ secrets.SLACK_BOT_USER_OAUTH_ACCESS_TOKEN }}
   #         slack-channel: ${{ fromJson(needs.slack.outputs.slack-thread).response.channel }}
   #         slack-text: "Scanned code with Trivy, Results are available <${{ github.event.pull_request._links.html.href }} | here> :rotating_light:"
-  #         slack-optional-thread_ts: ${{ fromJson(needs.slack.outputs.slack-thread).response.message.ts }}        
+  #         slack-optional-thread_ts: ${{ fromJson(needs.slack.outputs.slack-thread).response.message.ts }}
 
   # check-job-status:
   #   name: Post-run hook

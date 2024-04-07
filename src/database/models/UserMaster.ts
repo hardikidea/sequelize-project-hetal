@@ -1,5 +1,5 @@
-import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript';
-import { UserSecurityGroupMaster } from './index';
+import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript'
+import { UserSecurityGroupMaster } from './index'
 
 @Table({
   timestamps: true,
@@ -11,7 +11,7 @@ export default class UserMaster extends Model<UserMaster> {
     autoIncrement: true,
     allowNull: false,
   })
-  id!: number;
+  id!: number
 
   @Column({
     type: DataType.STRING,
@@ -21,20 +21,20 @@ export default class UserMaster extends Model<UserMaster> {
       isEmail: true,
     },
   })
-  email!: string;
+  email!: string
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  password!: string;
+  password!: string
 
   @Column({
     type: DataType.BOOLEAN,
     defaultValue: true,
   })
-  isActive!: boolean;
+  isActive!: boolean
 
   @HasMany(() => UserSecurityGroupMaster)
-  userSecurityGroups!: UserSecurityGroupMaster[];
+  userSecurityGroups!: UserSecurityGroupMaster[]
 }
