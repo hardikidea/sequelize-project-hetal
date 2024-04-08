@@ -51,7 +51,7 @@ export class ServerApplication {
     this.expressApp.use(this.getRouterURL('/user'), UserMasterController.getInstance().router)
     this.expressApp.use(this.getRouterURL('/securitygroup'), SecurityGroupMasterController.getInstance().router)
     this.expressApp.use(this.getRouterURL('/user/securitygroup'), UserSecurityGroupMasterController.getInstance().router)
-    this.expressApp.use(this.getRouterURL('/public'), RegistrationController.getInstance().router)
+    this.expressApp.use(this.getRouterURL('/register'), RegistrationController.getInstance().router)
 
     // Global error handler
     this.globalErrorHandler(this.expressApp)

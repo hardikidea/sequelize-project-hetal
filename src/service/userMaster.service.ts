@@ -34,6 +34,15 @@ export class UserMasterService {
     }
   }
 
+  public login = async (emailAddress: string, password: string) => {
+    try {
+      const userInformation = await this.userMasterRepositoryInstance.find({ where: { email: emailAddress, password, isActive: true } })
+      if (userInformation) {
+        return userInformation
+      }
+    } catch (error) {}
+  }
+
   public findById = async (userId: number) => {
     try {
       const userInformation = await this.userMasterRepositoryInstance.findById(userId)

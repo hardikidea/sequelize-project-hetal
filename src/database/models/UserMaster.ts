@@ -1,6 +1,8 @@
 import { Model, DataTypes, CreationOptional } from 'sequelize';
 import { sequelize } from './sync-model';
 import UserSecurityGroupMaster from './UserSecurityGroupMaster';
+import * as bcrypt from 'bcrypt';
+
 
 class UserMaster extends Model {
   declare id: CreationOptional<number>;
@@ -8,6 +10,11 @@ class UserMaster extends Model {
   declare password: string;
   declare isActive: CreationOptional<boolean>;
   declare userSecurityGroupMaster?: CreationOptional<UserSecurityGroupMaster[]>;
+
+  // Method to compare provided password with the hashed one
+  verifyPassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password);
+  }
 }
 
 UserMaster.init({
@@ -46,7 +53,14 @@ UserMaster.init({
   defaultScope: {
     attributes: { exclude: ['password'] },
     where: { isActive: true }
-  }
+  },
+  hooks: {
+    beforeSave: async (user: UserMaster) => {
+      if (user.changed('password')) {
+        user.password = await bcrypt.hash(user.password, 10);
+      }
+    }
+  },
 });
 
 export default UserMaster;

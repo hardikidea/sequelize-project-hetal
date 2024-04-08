@@ -32,8 +32,14 @@ class RegistrationController {
       ),
   ]
 
+  private constraintForLogin = [
+    body('email').isEmail().notEmpty().withMessage('Please provide a valid email'),
+    body('password').notEmpty().isLength({ min: 8 }) .withMessage('Incorrect password'),
+  ]
+
   private initRoutes(): void {
     this.router.post('/signup', this.constraintForRegistration, this.signUp)
+    this.router.post('/login', this.constraintForLogin, this.login)
   }
 
   async signUp(request: Request, response: Response, next: NextFunction) {
@@ -59,6 +65,39 @@ class RegistrationController {
         } else {
           response.status(500).send('Internal Server Error')
         }
+      }
+    } else {
+      response.status(400).send({ status: 400, data: `Invalid Request` })
+    }
+  }
+
+  async login(request: Request, response: Response, next: NextFunction) {
+    const { email, password } = request.body
+
+    if (email && password) {
+      const errors = validationResult(request)
+      if (!errors.isEmpty()) {
+        const groupedByPath =_.groupBy(errors.array(), 'path');
+        const result = _.mapValues(groupedByPath, (group) => group.map((error) => error.msg));
+        return response.status(400).json({ validation: result })
+      }
+
+      try {
+        const userInformation = await UserMasterService.getInstance().login(email, password)
+        if (!userInformation) {
+          return response.status(401).send({ status: 401, data: `Invalid email or password` })
+        } else {
+          response.cookie('permission', userInformation.email, {
+            path: '/',
+            httpOnly: true,
+            secure: true,
+            sameSite: 'lax',
+            maxAge: 1000 * 60 * 60 * 24 * 7,
+          })
+          response.status(200).send({ status: 200, data: userInformation })
+        }
+      } catch (error) {
+        response.status(500).send('Internal Server Error')
       }
     } else {
       response.status(400).send({ status: 400, data: `Invalid Request` })
