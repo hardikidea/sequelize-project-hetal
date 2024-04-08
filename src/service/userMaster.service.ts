@@ -19,22 +19,22 @@ export class UserMasterService {
     return UserMasterService.instance
   }
 
-  public fetchUserAllData = async (options?: FindOptions) => {
+  public findAll = async (options?: FindOptions) => {
     try {
       return await this.userMasterRepositoryInstance.findAll(options ? options : {})
     } catch (error) {
       throw error
     }
   }
-  public fetchUserPagination = async (offset: number, limit: number): Promise<IPagination<UserMaster>> => {
+  public pagination = async (offset: number, limit: number): Promise<IPagination<UserMaster>> => {
     try {
-      return await this.userMasterRepositoryInstance.findAndCountAll({ limit, offset })
+      return await this.userMasterRepositoryInstance.pagination({ limit, offset })
     } catch (error) {
       throw new CustomError(400, `Error fetching all users`)
     }
   }
 
-  public fetchUserById = async (userId: number) => {
+  public findById = async (userId: number) => {
     try {
       const userInformation = await this.userMasterRepositoryInstance.findById(userId)
       if (userInformation) {
@@ -43,7 +43,7 @@ export class UserMasterService {
     } catch (error) {}
   }
 
-  public removeUserById = async (userId: number) => {
+  public delete = async (userId: number) => {
     try {
       const userInformation = await this.userMasterRepositoryInstance.delete(userId)
       if (userInformation) {
@@ -52,7 +52,7 @@ export class UserMasterService {
     } catch (error) {}
   }
 
-  public createUser = async (userRegistration: Partial<UserMaster>): Promise<void> => {
+  public create = async (userRegistration: Partial<UserMaster>): Promise<void> => {
     try {
       await this.userMasterRepositoryInstance.create(userRegistration)
     } catch (error) {

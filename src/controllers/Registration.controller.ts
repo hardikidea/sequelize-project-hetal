@@ -49,7 +49,7 @@ class RegistrationController {
 
       try {
         const postUserInformation: Partial<UserMaster> = { email, password }
-        await UserMasterService.getInstance().createUser(postUserInformation)
+        await UserMasterService.getInstance().create(postUserInformation)
         response.status(200).send({ status: 200, data: `[${email}] Registration done successfully.` })
       } catch (error) {
         if(error instanceof UniqueConstraintError) {

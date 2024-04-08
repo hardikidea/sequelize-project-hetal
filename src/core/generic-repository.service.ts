@@ -72,7 +72,7 @@ export abstract class GenericRepository<T extends Model<T>> implements IReposito
     }
   }
 
-  async findAndCountAll(options: FindOptions): Promise<IPagination<T>> {
+  async pagination(options: FindOptions): Promise<IPagination<T>> {
     try {
       const { count, rows } = await this.model.findAndCountAll(options)
       return { rows, count, totalPages: Math.ceil(count / options.limit!) }

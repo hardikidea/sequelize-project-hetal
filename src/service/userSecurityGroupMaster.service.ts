@@ -6,7 +6,6 @@ import { UserSecurityGroupMasterRepository } from "../repository/index"
 
 export class UserSecurityGroupMasterService {
   private static instance: UserSecurityGroupMasterService
-  
 
   constructor(private UserSecurityGroupMasterRepositoryInstance = UserSecurityGroupMasterRepository.getInstance()) {}
 
@@ -17,22 +16,22 @@ export class UserSecurityGroupMasterService {
     return UserSecurityGroupMasterService.instance
   }
 
-  public fetchAllUserSecurityGroups = async (options?: FindOptions) => {
+  public findAll = async (options?: FindOptions) => {
     try {
       return await this.UserSecurityGroupMasterRepositoryInstance.findAll(options ? options : {})
     } catch (error) {
       throw error
     }
   }
-  public fetchUserSecurityGroupPagination = async (offset: number, limit: number): Promise<IPagination<UserSecurityGroupMaster>> => {
+  public pagination = async (offset: number, limit: number): Promise<IPagination<UserSecurityGroupMaster>> => {
     try {
-      return await this.UserSecurityGroupMasterRepositoryInstance.findAndCountAll({ limit, offset })
+      return await this.UserSecurityGroupMasterRepositoryInstance.pagination({ limit, offset })
     } catch (error) {
       throw new CustomError(400, `Error fetching all UserSecurityGroups`)
     }
   }
 
-  public fetchUserSecurityGroupById = async (id: number) => {
+  public findById = async (id: number) => {
     try {
       const userSecurityGroupInformation = await this.UserSecurityGroupMasterRepositoryInstance.findById(id)
       if (userSecurityGroupInformation) {
@@ -41,7 +40,7 @@ export class UserSecurityGroupMasterService {
     } catch (error) {}
   }
 
-  public removeUserSecurityGroupMasterById = async (id: number) => {
+  public delete = async (id: number) => {
     try {
       const userSecurityGroupInformation = await this.UserSecurityGroupMasterRepositoryInstance.delete(id)
       if (userSecurityGroupInformation) {
@@ -50,7 +49,7 @@ export class UserSecurityGroupMasterService {
     } catch (error) {}
   }
 
-  public createUserSecurityGroupMaster = async (record: Partial<UserSecurityGroupMaster>): Promise<void> => {
+  public create = async (record: Partial<UserSecurityGroupMaster>): Promise<void> => {
     try {
       await this.UserSecurityGroupMasterRepositoryInstance.create(record)
     } catch (error) {

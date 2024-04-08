@@ -17,22 +17,22 @@ export class SecurityGroupMasterService {
     return SecurityGroupMasterService.instance
   }
 
-  public fetchAllSecurityGroups = async (options?: FindOptions) => {
+  public findAll = async (options?: FindOptions) => {
     try {
       return await this.securityGroupMasterRepositoryInstance.findAll(options ? options : {})
     } catch (error) {
       throw error
     }
   }
-  public fetchSecurityGroupPagination = async (offset: number, limit: number): Promise<IPagination<SecurityGroupMaster>> => {
+  public pagination = async (offset: number, limit: number): Promise<IPagination<SecurityGroupMaster>> => {
     try {
-      return await this.securityGroupMasterRepositoryInstance.findAndCountAll({ limit, offset })
+      return await this.securityGroupMasterRepositoryInstance.pagination({ limit, offset })
     } catch (error) {
       throw new CustomError(400, `Error fetching all securityGroups`)
     }
   }
 
-  public fetchSecurityGroupById = async (id: number) => {
+  public findById = async (id: number) => {
     try {
       const securityGroupInformation = await this.securityGroupMasterRepositoryInstance.findById(id)
       if (securityGroupInformation) {
@@ -41,7 +41,7 @@ export class SecurityGroupMasterService {
     } catch (error) {}
   }
 
-  public removeSecurityGroupById = async (id: number) => {
+  public delete = async (id: number) => {
     try {
       const securityGroupInformation = await this.securityGroupMasterRepositoryInstance.delete(id)
       if (securityGroupInformation) {
@@ -50,7 +50,7 @@ export class SecurityGroupMasterService {
     } catch (error) {}
   }
 
-  public createSecurityGroup = async (record: Partial<SecurityGroupMaster>): Promise<void> => {
+  public create = async (record: Partial<SecurityGroupMaster>): Promise<void> => {
     try {
       await this.securityGroupMasterRepositoryInstance.create(record)
     } catch (error) {

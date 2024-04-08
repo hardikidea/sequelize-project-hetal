@@ -28,7 +28,7 @@ class SecurityGroupMasterController {
 
   async getSecurityGroupMasterById(req: Request, res: Response, next: NextFunction) {
     const id: number = parseInt(req.params.id, 0)
-    const SecurityGroupMasterInfo = await SecurityGroupMasterService.getInstance().fetchSecurityGroupById(id)
+    const SecurityGroupMasterInfo = await SecurityGroupMasterService.getInstance().findById(id)
 
     if (SecurityGroupMasterInfo) {
       res.status(200).json({ status: 200, data: SecurityGroupMasterInfo })
@@ -39,7 +39,7 @@ class SecurityGroupMasterController {
 
   async removeSecurityGroupMasterById(request: Request, response: Response, next: NextFunction) {
     const id: number = parseInt(request.params.id, 0)
-    const isRemoved = await SecurityGroupMasterService.getInstance().removeSecurityGroupById(id)
+    const isRemoved = await SecurityGroupMasterService.getInstance().delete(id)
 
     if (isRemoved) {
       response.status(200).json({ status: 200, data: `SecurityGroupMaster[${id}] removed successfully` })
@@ -55,7 +55,7 @@ class SecurityGroupMasterController {
       const offset = (page - 1) * limit
 
       try {
-        const dataItems = await SecurityGroupMasterService.getInstance().fetchSecurityGroupPagination(offset, limit)
+        const dataItems = await SecurityGroupMasterService.getInstance().pagination(offset, limit)
         response.status(200).send({ ...dataItems, currentPage: page })
       } catch (error) {
         console.error('Error fetching SecurityGroupMasters:', error)
@@ -63,7 +63,7 @@ class SecurityGroupMasterController {
       }
     } else {
       try {
-        const SecurityGroupMastersInformation = await SecurityGroupMasterService.getInstance().fetchAllSecurityGroups()
+        const SecurityGroupMastersInformation = await SecurityGroupMasterService.getInstance().findAll()
         response.status(200).json({ status: 200, data: SecurityGroupMastersInformation })
       } catch (error) {
         if(error instanceof CustomError) {

@@ -7,5 +7,5 @@ export interface IRepository<T> {
   create(item: Partial<T>): Promise<T>
   update(id: number, item: Partial<T>): Promise<[affectedCount: number]>
   delete(id: number): Promise<number>
-  findAndCountAll(options: FindOptions): Promise<{ rows: T[]; count: number }>
+  pagination(options: FindOptions): Promise<{ rows: T[]; count: number }>
 }

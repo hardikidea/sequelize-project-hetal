@@ -28,7 +28,7 @@ class UserMasterController {
 
   async getUserById(req: Request, res: Response, next: NextFunction) {
     const id: number = parseInt(req.params.id, 0)
-    const userInfo = await UserMasterService.getInstance().fetchUserById(id)
+    const userInfo = await UserMasterService.getInstance().findById(id)
 
     if (userInfo) {
       res.status(200).json({ status: 200, data: userInfo })
@@ -39,7 +39,7 @@ class UserMasterController {
 
   async removeUserById(request: Request, response: Response, next: NextFunction) {
     const id: number = parseInt(request.params.id, 0)
-    const isRemoved = await UserMasterService.getInstance().removeUserById(id)
+    const isRemoved = await UserMasterService.getInstance().delete(id)
 
     if (isRemoved) {
       response.status(200).json({ status: 200, data: `User[${id}] removed successfully` })
@@ -55,7 +55,7 @@ class UserMasterController {
       const offset = (page - 1) * limit
 
       try {
-        const dataItems = await UserMasterService.getInstance().fetchUserPagination(offset, limit)
+        const dataItems = await UserMasterService.getInstance().pagination(offset, limit)
         response.status(200).send({ ...dataItems, currentPage: page })
       } catch (error) {
         console.error('Error fetching users:', error)
@@ -63,7 +63,7 @@ class UserMasterController {
       }
     } else {
       try {
-        const usersInformation = await UserMasterService.getInstance().fetchUserAllData()
+        const usersInformation = await UserMasterService.getInstance().findAll()
         response.status(200).json({ status: 200, data: usersInformation })
       } catch (error) {
         if(error instanceof CustomError) {
