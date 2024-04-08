@@ -46,8 +46,6 @@ UserSecurityGroupMaster.init({
   freezeTableName: true,
 });
 
-UserMaster.hasMany(UserSecurityGroupMaster, { foreignKey: 'userId', onDelete: 'CASCADE', onUpdate: 'CASCADE'});
-SecurityGroupMaster.hasMany(UserSecurityGroupMaster, { foreignKey: 'securityGroupId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 UserSecurityGroupMaster.belongsTo(UserMaster, { foreignKey: 'userId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 UserSecurityGroupMaster.belongsTo(SecurityGroupMaster, { foreignKey: 'securityGroupId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 

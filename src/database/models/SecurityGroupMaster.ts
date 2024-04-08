@@ -1,11 +1,13 @@
 import { Model, DataTypes, CreationOptional } from 'sequelize';
 import { sequelize } from './sync-model';
+import UserSecurityGroupMaster from './UserSecurityGroupMaster';
 
 class SecurityGroupMaster extends Model {
   declare id: CreationOptional<number>;
   declare name: string;
   declare description: string;
   declare isActive: CreationOptional<boolean>;
+  declare userSecurityGroupMaster?: CreationOptional<UserSecurityGroupMaster[]>;
 }
 
 SecurityGroupMaster.init({
@@ -33,6 +35,11 @@ SecurityGroupMaster.init({
   sequelize,
   modelName: 'SecurityGroupMaster',
   freezeTableName: true,
+  defaultScope: {
+    // attributes: { exclude: ['password'] },
+    where: { isActive: true }
+  }
 });
 
+SecurityGroupMaster.hasMany(UserSecurityGroupMaster, { foreignKey: 'securityGroupId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
 export default SecurityGroupMaster;

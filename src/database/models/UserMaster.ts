@@ -1,11 +1,13 @@
 import { Model, DataTypes, CreationOptional } from 'sequelize';
 import { sequelize } from './sync-model';
+import UserSecurityGroupMaster from './UserSecurityGroupMaster';
 
 class UserMaster extends Model {
-  declare id: CreationOptional<number>; // Marks `id` as optional in creation because it's auto-incremented
+  declare id: CreationOptional<number>;
   declare email: string;
   declare password: string;
-  declare isActive: CreationOptional<boolean>; // Marks `isActive` as optional in creation because it has a default value
+  declare isActive: CreationOptional<boolean>;
+  declare userSecurityGroupMaster?: CreationOptional<UserSecurityGroupMaster[]>;
 }
 
 UserMaster.init({
@@ -46,5 +48,7 @@ UserMaster.init({
     where: { isActive: true }
   }
 });
+
+UserMaster.hasMany(UserSecurityGroupMaster, { foreignKey: 'userId', onDelete: 'CASCADE', onUpdate: 'CASCADE'});
 
 export default UserMaster;
