@@ -49,6 +49,4 @@ UserMaster.init({
   }
 });
 
-UserMaster.hasMany(UserSecurityGroupMaster, { foreignKey: 'userId', onDelete: 'CASCADE', onUpdate: 'CASCADE'});
-
 export default UserMaster;

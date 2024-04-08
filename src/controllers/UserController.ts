@@ -3,7 +3,7 @@ import { Router, Request, Response, NextFunction } from 'express'
 import { CustomError } from '../utils/CustomError'
 import { UserMasterService } from '../service/userMaster.service'
 
-class UserController {
+class UserMasterController {
   public router: Router
   
   private constructor() {
@@ -11,13 +11,13 @@ class UserController {
     this.initRoutes()
   }
 
-  private static instance: UserController
+  private static instance: UserMasterController
 
-  static getInstance(): UserController {
-    if (!UserController.instance) {
-      UserController.instance = new UserController()
+  static getInstance(): UserMasterController {
+    if (!UserMasterController.instance) {
+      UserMasterController.instance = new UserMasterController()
     }
-    return UserController.instance
+    return UserMasterController.instance
   }
 
   private initRoutes(): void {
@@ -76,4 +76,4 @@ class UserController {
   }
 }
 
-export default UserController
+export default UserMasterController

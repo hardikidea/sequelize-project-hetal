@@ -9,9 +9,8 @@ import { AuthController } from './controllers/AuthController'
 import { requestLoggerMiddleware } from './middlewares/requestLogger.middleware'
 import logger from './utils/logger'
 import cors from 'cors'
-import { ValidateAuthentication } from './database'
-import UserController from './controllers/UserController'
-import RegistrationController from './controllers/Registration.controller'
+import { ValidateAuthentication } from './database';
+import { UserMasterController, SecurityGroupMasterController, RegistrationController } from './controllers'
 
 
 export class ServerApplication {
@@ -49,7 +48,8 @@ export class ServerApplication {
 
     this.expressApp.use(this.getRouterURL('/auth'), authController.router)
     this.expressApp.use(this.getRouterURL('/home'), homeController.router)
-    this.expressApp.use(this.getRouterURL('/user'), UserController.getInstance().router)
+    this.expressApp.use(this.getRouterURL('/user'), UserMasterController.getInstance().router)
+    this.expressApp.use(this.getRouterURL('/securitygroup'), SecurityGroupMasterController.getInstance().router)
     this.expressApp.use(this.getRouterURL('/public'), RegistrationController.getInstance().router)
 
     // Global error handler

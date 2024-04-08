@@ -41,5 +41,5 @@ SecurityGroupMaster.init({
   }
 });
 
-SecurityGroupMaster.hasMany(UserSecurityGroupMaster, { foreignKey: 'securityGroupId', onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+
 export default SecurityGroupMaster;
