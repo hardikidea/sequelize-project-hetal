@@ -2,6 +2,8 @@
 import { Request, Response, Router } from 'express'
 import { UserMasterService } from '../service/userMaster.service'
 import { Service } from 'typedi'
+import { validationForId } from '../validations/userMaster.validation'
+
 
 
 @Service()
@@ -15,7 +17,7 @@ export class UserMasterController {
 
   private initRoutes(): void {
     this.router.get('/', this.getAllUserInformation)
-    // this.router.get('/:id', validationForId, this.userMasterService.fetchById)
+    this.router.get('/:id', validationForId, this.userMasterService.fetchById)
     // this.router.delete('/:id', validationForId, this.userMasterService.deleteRecord)
   }
 

@@ -1,19 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".", // This must be specified if "paths" is.
-    "paths": {
-      // "@config/*": ["src/database/config/*"],
-      // "@models/*": ["src/database/models/*"],
-      // "@seeders/*": ["src/database/seeders/*"],
-      // "@migrations/*": ["src/database/migrations/*"],
-      // "@controllers/*": ["src/controllers/*"],
-      // "@middlewares/*": ["src/middlewares/*"],
-      // "@utils/*": ["src/utils/*"],
-      // "@repositorys/*": ["src/repository/*"],
-      // "@service/*": ["src/service/*"],
-      // "*": ["src/*"]
-      "src/*": ["src/*"]
-    },
     "module": "commonjs",
     "target": "ESNext",
     "lib": ["es6"],
@@ -29,8 +15,21 @@
     "noFallthroughCasesInSwitch": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
-    "rootDir": "./src",
     "outDir": "./dist",
+    "rootDir": "./src",
+    "baseUrl": "./",
+    "paths": {
+      "@controllers/*": ["src/controllers/*"],
+      "@core/*": ["src/core/*"],
+      "@database/*": ["src/database/*"],
+      "@interface/*": ["src/interface/*"],
+      "@middlewares/*": ["src/middlewares/*"],
+      "@repository/*": ["src/repository/*"],
+      "@service/*": ["src/service/*"],
+      "@utils/*": ["src/utils/*"],
+      "@validations/*": ["src/validations/*"],
+      "*": ["src/*"]
+    },
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,

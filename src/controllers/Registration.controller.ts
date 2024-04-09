@@ -1,27 +1,18 @@
 import { Router, Request, Response, NextFunction } from 'express'
 import { validationResult } from 'express-validator'
 import _ from 'lodash';
-
-import { UserMasterRepository } from '../repository';
 import { validationForLoginRequest } from '../validations/userMaster.validation';
 import { CoreValidation } from '../core/validation';
+import { UserMasterService } from '../service/userMaster.service';
+
 
 
 class RegistrationController {
   public router: Router;
 
-  private constructor() {
+  private constructor(private userMasterService: UserMasterService) {
     this.router = Router()
     this.initRoutes()
-  }
-
-  private static instance: RegistrationController
-
-  static getInstance(): RegistrationController {
-    if (!RegistrationController.instance) {
-      RegistrationController.instance = new RegistrationController()
-    }
-    return RegistrationController.instance
   }
 
   // private constraintForRegistration = [
@@ -84,7 +75,7 @@ class RegistrationController {
       }
 
       try {
-        const userInformation = await UserMasterRepository.getInstance().login(email, password)
+        const userInformation = await this.userMasterService.login(email, password)
         if (!userInformation) {
           return response.status(401).send({ status: 401, data: `Invalid email or password` })
         } else {

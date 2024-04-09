@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "format": "prettier --write .",
     "pre-commit": "eslint 'src/**/*.{js,ts}' --fix && prettier --write 'src/**/*.{js,ts,json,css,md}'",
     "sequelize": "ts-node -r tsconfig-paths/register ./node_modules/.bin/sequelize",
@@ -68,7 +68,11 @@
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.8",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.4.2"
+  },
+  "_moduleAliases": {
+    "@controllers": "./dist/controllers"
   }
 }

@@ -28,7 +28,7 @@ class UserSecurityGroupMasterController {
 
   async getUserSecurityGroupMasterById(req: Request, res: Response, next: NextFunction) {
     const id: number = parseInt(req.params.id, 0)
-    const UserSecurityGroupMasterInfo = await UserSecurityGroupMasterRepository.getInstance().delete(id)
+    const UserSecurityGroupMasterInfo = await UserSecurityGroupMasterRepository.getInstance().delete({ where: { id } })
 
     if (UserSecurityGroupMasterInfo) {
       res.status(200).json({ status: 200, data: UserSecurityGroupMasterInfo })
@@ -39,7 +39,7 @@ class UserSecurityGroupMasterController {
 
   async removeUserSecurityGroupMasterById(request: Request, response: Response, next: NextFunction) {
     const id: number = parseInt(request.params.id, 0)
-    const isRemoved = await UserSecurityGroupMasterRepository.getInstance().delete(id)
+    const isRemoved = await UserSecurityGroupMasterRepository.getInstance().delete({ where: { id } })
 
     if (isRemoved) {
       response.status(200).json({ status: 200, data: `UserSecurityGroupMaster[${id}] removed successfully` })

@@ -2,9 +2,10 @@
 import { Service } from 'typedi';
 import { UserMasterRepository } from '../repository';
 import { UserMaster } from '../database/models';
-import { IDeleteRepository, IReadRepository, IWriteRepository } from 'src/core/IGenricRepository.interface';
 import { FindOptions } from 'sequelize';
-import { TPaginationData } from 'src/core/generic.type';
+import { IWriteRepository, IReadRepository, IDeleteRepository } from '../core/IGenericRepository.interface';
+import { TPaginationData } from '../core/generic.type';
+
 
 
 @Service()

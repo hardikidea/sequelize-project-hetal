@@ -1,7 +1,6 @@
 import express, { Express } from 'express'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
-
 import { CustomError } from './utils/CustomError'
 import { Request, Response } from 'express'
 import { requestLoggerMiddleware } from './middlewares/requestLogger.middleware'
@@ -9,7 +8,7 @@ import logger from './utils/logger'
 import cors from 'cors'
 import { ValidateAuthentication } from './database';
 import Container from 'typedi'
-import { UserMasterController } from './controllers/userMaster.Controller'
+import { UserMasterController } from '@controllers/userMaster.Controller'
 
 
 export class ServerApplication {

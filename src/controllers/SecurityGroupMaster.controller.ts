@@ -29,7 +29,7 @@ class SecurityGroupMasterController {
 
   async getSecurityGroupMasterById(req: Request, res: Response, next: NextFunction) {
     const id: number = parseInt(req.params.id, 0)
-    const SecurityGroupMasterInfo = await SecurityGroupMasterRepository.getInstance().findOne(id)
+    const SecurityGroupMasterInfo = await SecurityGroupMasterRepository.getInstance().find({ where: { id } })
 
     if (SecurityGroupMasterInfo) {
       res.status(200).json({ status: 200, data: SecurityGroupMasterInfo })
@@ -40,7 +40,7 @@ class SecurityGroupMasterController {
 
   async removeSecurityGroupMasterById(request: Request, response: Response, next: NextFunction) {
     const id: number = parseInt(request.params.id, 0)
-    const isRemoved = await SecurityGroupMasterRepository.getInstance().delete(id)
+    const isRemoved = await SecurityGroupMasterRepository.getInstance().delete({ where: { id } })
 
     if (isRemoved) {
       response.status(200).json({ status: 200, data: `SecurityGroupMaster[${id}] removed successfully` })
