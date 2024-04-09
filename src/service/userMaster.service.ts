@@ -1,77 +1,42 @@
 
-import { UserMasterRepository } from "../repository/userMaster.repository"
-import { UserMaster } from "../database/models"
-import { IPagination } from "../interface/IPagination.interface"
+import { Service } from 'typedi';
+import { UserMasterRepository } from '../repository';
+import { UserMaster } from '../database/models';
+import { IDeleteRepository, IReadRepository, IWriteRepository } from 'src/core/IGenricRepository.interface';
+import { FindOptions } from 'sequelize';
+import { TPaginationData } from 'src/core/generic.type';
 
-import { CustomError } from "../utils/CustomError"
-import { FindOptions, UniqueConstraintError } from "sequelize"
 
-export class UserMasterService {
-  private static instance: UserMasterService
-  
+@Service()
+export class UserMasterService implements IWriteRepository<UserMaster>, IReadRepository<UserMaster>, IDeleteRepository<UserMaster> {
 
-  constructor(private userMasterRepositoryInstance = UserMasterRepository.getInstance()) {}
-
-  public static getInstance(): UserMasterService {
-    if (!UserMasterService.instance) {
-      UserMasterService.instance = new UserMasterService()
-    }
-    return UserMasterService.instance
+  constructor(private userMasterRepository: UserMasterRepository) {
+  }
+  async deleteRecord(option?: FindOptions): Promise<number> {
+    return this.userMasterRepository.delete(option ?? {});
+  }
+  async fetchRecord(option?: FindOptions): Promise<UserMaster | null> {
+    return await this.userMasterRepository.find(option ?? {});
+  }
+  async fetchAllRecord(option?: FindOptions): Promise<UserMaster[]> {
+    return this.userMasterRepository.findAll(option ?? {});
+  }
+  async fetchById(id: number): Promise<UserMaster | null> {
+    return this.userMasterRepository.findById(id);
+  }
+  async fetchPagination(page: number, limit: number): Promise<TPaginationData<UserMaster>> {
+    const offset = (page - 1) * limit;
+    const dataItems = await this.userMasterRepository.pagination({ limit, offset })
+    return { ...dataItems, currentPage: page }
+  }
+  async createRecord(item: Partial<UserMaster>): Promise<UserMaster> {
+    return await this.userMasterRepository.create(item);
+  }
+  async updateRecord(id: number, item: Partial<UserMaster>): Promise<[affectedCount: number]> {
+    return await this.userMasterRepository.update(id, item);
   }
 
-  public findAll = async (options?: FindOptions) => {
-    try {
-      return await this.userMasterRepositoryInstance.findAll(options ? options : {})
-    } catch (error) {
-      throw error
-    }
-  }
-  public pagination = async (offset: number, limit: number): Promise<IPagination<UserMaster>> => {
-    try {
-      return await this.userMasterRepositoryInstance.pagination({ limit, offset })
-    } catch (error) {
-      throw new CustomError(400, `Error fetching all users`)
-    }
-  }
-
-  public login = async (emailAddress: string, password: string) => {
-    try {
-      const userInformation = await this.userMasterRepositoryInstance.find({ where: { email: emailAddress, password, isActive: true } })
-      if (userInformation) {
-        return userInformation
-      }
-    } catch (error) {}
-  }
-
-  public findById = async (userId: number) => {
-    try {
-      const userInformation = await this.userMasterRepositoryInstance.findById(userId)
-      if (userInformation) {
-        return userInformation
-      }
-    } catch (error) {}
-  }
-
-  public delete = async (userId: number) => {
-    try {
-      const userInformation = await this.userMasterRepositoryInstance.delete(userId)
-      if (userInformation) {
-        return userInformation
-      }
-    } catch (error) {}
-  }
-
-  public create = async (userRegistration: Partial<UserMaster>): Promise<void> => {
-    try {
-      await this.userMasterRepositoryInstance.create(userRegistration)
-    } catch (error) {
-      if(error instanceof UniqueConstraintError) {
-        throw error;
-      } else {
-        throw new CustomError(400, `Error fetching all users`)
-      }
-    }
+  async login(email: string, password: string) {
+    return await this.userMasterRepository.login(email, password);
   }
 }
-
-// export default UserMasterService.getInstance()

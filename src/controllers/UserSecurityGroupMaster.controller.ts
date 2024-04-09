@@ -1,8 +1,7 @@
 // src/controllers/UserController.ts
 import { Router, Request, Response, NextFunction } from 'express'
 import { CustomError } from '../utils/CustomError'
-import { UserSecurityGroupMasterService } from '../service/index'
-
+import { UserSecurityGroupMasterRepository } from '../repository'
 
 class UserSecurityGroupMasterController {
   public router: Router
@@ -29,7 +28,7 @@ class UserSecurityGroupMasterController {
 
   async getUserSecurityGroupMasterById(req: Request, res: Response, next: NextFunction) {
     const id: number = parseInt(req.params.id, 0)
-    const UserSecurityGroupMasterInfo = await UserSecurityGroupMasterService.getInstance().delete(id)
+    const UserSecurityGroupMasterInfo = await UserSecurityGroupMasterRepository.getInstance().delete(id)
 
     if (UserSecurityGroupMasterInfo) {
       res.status(200).json({ status: 200, data: UserSecurityGroupMasterInfo })
@@ -40,7 +39,7 @@ class UserSecurityGroupMasterController {
 
   async removeUserSecurityGroupMasterById(request: Request, response: Response, next: NextFunction) {
     const id: number = parseInt(request.params.id, 0)
-    const isRemoved = await UserSecurityGroupMasterService.getInstance().delete(id)
+    const isRemoved = await UserSecurityGroupMasterRepository.getInstance().delete(id)
 
     if (isRemoved) {
       response.status(200).json({ status: 200, data: `UserSecurityGroupMaster[${id}] removed successfully` })
@@ -56,7 +55,7 @@ class UserSecurityGroupMasterController {
       const offset = (page - 1) * limit
 
       try {
-        const dataItems = await UserSecurityGroupMasterService.getInstance().pagination(offset, limit)
+        const dataItems = await UserSecurityGroupMasterRepository.getInstance().pagination({ limit, offset })
         response.status(200).send({ ...dataItems, currentPage: page })
       } catch (error) {
         console.error('Error fetching UserSecurityGroupMasters:', error)
@@ -64,7 +63,7 @@ class UserSecurityGroupMasterController {
       }
     } else {
       try {
-        const UserSecurityGroupMastersInformation = await UserSecurityGroupMasterService.getInstance().findAll()
+        const UserSecurityGroupMastersInformation = await UserSecurityGroupMasterRepository.getInstance().findAll()
         response.status(200).json({ status: 200, data: UserSecurityGroupMastersInformation })
       } catch (error) {
         if(error instanceof CustomError) {

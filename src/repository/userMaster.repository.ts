@@ -1,19 +1,22 @@
 
+import { Service } from "typedi"
 import { GenericRepository } from "../core/generic-repository.service"
 import { UserMaster } from "../database/models"
 
+@Service()
 export class UserMasterRepository extends GenericRepository<UserMaster> {
-  private static instance: UserMasterRepository
-
-  private constructor() {
+  
+  constructor() {
     super(UserMaster)
   }
 
-  public static getInstance(): UserMasterRepository {
-    if (!UserMasterRepository.instance) {
-      UserMasterRepository.instance = new UserMasterRepository()
-    }
-    return UserMasterRepository.instance
+  public login = async (emailAddress: string, password: string) => {
+    try {
+      const userInformation = await this.find({ where: { email: emailAddress, password, isActive: true } })
+      if (userInformation) {
+        return userInformation
+      }
+    } catch (error) {}
   }
 
   public sayHello =  () => {
@@ -25,6 +28,3 @@ export class UserMasterRepository extends GenericRepository<UserMaster> {
       }
   }
 }
-
-//   export const userMasterRepository = UserMasterRepository.getInstance();
-// export default UserMasterRepository.getInstance()

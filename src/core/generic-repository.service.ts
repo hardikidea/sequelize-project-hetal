@@ -1,35 +1,15 @@
-import { Model, UniqueConstraintError } from 'sequelize'
-import { IRepository } from './IRepository.interface'
+import { Model, ModelCtor, UniqueConstraintError } from 'sequelize'
+// import { IRepository } from './IRepository.interface'
 import { FindOptions, WhereOptions } from 'sequelize'
-import { IPagination } from '../interface/IPagination.interface'
 import _ from 'lodash'
 import { CustomError } from '../utils/CustomError'
+import { IWrite, IRead, IDelete } from './IRepository.interface'
+import { TPaginationData } from './generic.type'
 
-
-export abstract class GenericRepository<T extends Model<T>> implements IRepository<T> {
-  constructor(protected model: typeof Model & { new (): T }) {}
-  async find(findOptions?: FindOptions): Promise<T | null> {
-    try {
-      if (findOptions) return await this.model.findOne(findOptions)
-      return await this.model.findOne()
-    } catch (error) {
-      console.error(error)
-      throw new Error('Error fetching all items')
-    }
+export abstract class GenericRepository<T extends Model<T>> implements IWrite<T>, IRead<T>, IDelete<T> {
+  constructor(private model: ModelCtor<T>) {
+    console.log('Model:', model)
   }
-  async findAll(findOptions?: FindOptions): Promise<T[]> {
-    try {
-      if (findOptions) return await this.model.findAll(findOptions)
-      return await this.model.findAll()
-    } catch (error: any) {
-      if (error?.name === 'SequelizeDatabaseError') {
-        throw new CustomError(400, error.message)
-      } else {
-        throw new Error('UnHandled: Error fetching all items')
-      }
-    }
-  }
-
   async findById(id: number): Promise<T | null> {
     try {
       return await this.model.findByPk(id)
@@ -62,17 +42,29 @@ export abstract class GenericRepository<T extends Model<T>> implements IReposito
     }
   }
 
-  async delete(id: number): Promise<number> {
+  async find(findOptions?: FindOptions): Promise<T | null> {
     try {
-      const whereClause: WhereOptions = { id }
-      return await this.model.destroy({ where: whereClause })
+      if (findOptions) return await this.model.findOne(findOptions)
+      return await this.model.findOne()
     } catch (error) {
       console.error(error)
-      throw new Error(`Error deleting item with id ${id}`)
+      throw new Error('Error fetching all items')
     }
   }
 
-  async pagination(options: FindOptions): Promise<IPagination<T>> {
+  async findAll(findOptions?: FindOptions): Promise<T[]> {
+    try {
+      return await this.model.findAll(findOptions ?? {})
+    } catch (error: any) {
+      if (error?.name === 'SequelizeDatabaseError') {
+        throw new CustomError(400, error.message)
+      } else {
+        throw new Error('UnHandled: Error fetching all items')
+      }
+    }
+  }
+  
+  async pagination(options: FindOptions): Promise<TPaginationData<T>> {
     try {
       const { count, rows } = await this.model.findAndCountAll(options)
       return { rows, count, totalPages: Math.ceil(count / options.limit!) }
@@ -80,5 +72,9 @@ export abstract class GenericRepository<T extends Model<T>> implements IReposito
       console.error(error)
       throw new Error('Error fetching all items')
     }
+  }
+
+  async delete(options: FindOptions<any>): Promise<number> {
+    return await this.model.destroy(options ?? {})
   }
 }

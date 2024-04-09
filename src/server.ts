@@ -2,15 +2,14 @@ import express, { Express } from 'express'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 
-import { HomeController } from './controllers/HomeController'
 import { CustomError } from './utils/CustomError'
 import { Request, Response } from 'express'
-import { AuthController } from './controllers/AuthController'
 import { requestLoggerMiddleware } from './middlewares/requestLogger.middleware'
 import logger from './utils/logger'
 import cors from 'cors'
 import { ValidateAuthentication } from './database';
-import { UserMasterController, SecurityGroupMasterController, RegistrationController, UserSecurityGroupMasterController } from './controllers'
+import Container from 'typedi'
+import { UserMasterController } from './controllers/userMaster.Controller'
 
 
 export class ServerApplication {
@@ -43,15 +42,17 @@ export class ServerApplication {
   }
 
   private mountRoutes(): void {
-    const homeController = new HomeController()
-    const authController = new AuthController()
+    // const homeController = new HomeController()
+    // const authController = new AuthController()
+    const userController = Container.get(UserMasterController);
+    // console.log('User Controller:', userController).
 
-    this.expressApp.use(this.getRouterURL('/auth'), authController.router)
-    this.expressApp.use(this.getRouterURL('/home'), homeController.router)
-    this.expressApp.use(this.getRouterURL('/user'), UserMasterController.getInstance().router)
-    this.expressApp.use(this.getRouterURL('/securitygroup'), SecurityGroupMasterController.getInstance().router)
-    this.expressApp.use(this.getRouterURL('/user/securitygroup'), UserSecurityGroupMasterController.getInstance().router)
-    this.expressApp.use(this.getRouterURL('/register'), RegistrationController.getInstance().router)
+    // this.expressApp.use(this.getRouterURL('/auth'), authController.router)
+    // this.expressApp.use(this.getRouterURL('/home'), homeController.router)
+    this.expressApp.use(this.getRouterURL('/user'), userController.router)
+    // this.expressApp.use(this.getRouterURL('/securitygroup'), SecurityGroupMasterController.getInstance().router)
+    // this.expressApp.use(this.getRouterURL('/user/securitygroup'), UserSecurityGroupMasterController.getInstance().router)
+    // this.expressApp.use(this.getRouterURL('/register'), RegistrationController.getInstance().router)
 
     // Global error handler
     this.globalErrorHandler(this.expressApp)

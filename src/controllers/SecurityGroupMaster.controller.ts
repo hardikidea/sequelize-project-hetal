@@ -1,7 +1,8 @@
 // src/controllers/UserController.ts
 import { Router, Request, Response, NextFunction } from 'express'
 import { CustomError } from '../utils/CustomError'
-import { SecurityGroupMasterService } from '../service/securityGroupMaster.service'
+import { SecurityGroupMasterRepository } from '../repository'
+
 
 class SecurityGroupMasterController {
   public router: Router
@@ -28,7 +29,7 @@ class SecurityGroupMasterController {
 
   async getSecurityGroupMasterById(req: Request, res: Response, next: NextFunction) {
     const id: number = parseInt(req.params.id, 0)
-    const SecurityGroupMasterInfo = await SecurityGroupMasterService.getInstance().findById(id)
+    const SecurityGroupMasterInfo = await SecurityGroupMasterRepository.getInstance().findOne(id)
 
     if (SecurityGroupMasterInfo) {
       res.status(200).json({ status: 200, data: SecurityGroupMasterInfo })
@@ -39,7 +40,7 @@ class SecurityGroupMasterController {
 
   async removeSecurityGroupMasterById(request: Request, response: Response, next: NextFunction) {
     const id: number = parseInt(request.params.id, 0)
-    const isRemoved = await SecurityGroupMasterService.getInstance().delete(id)
+    const isRemoved = await SecurityGroupMasterRepository.getInstance().delete(id)
 
     if (isRemoved) {
       response.status(200).json({ status: 200, data: `SecurityGroupMaster[${id}] removed successfully` })
@@ -55,7 +56,7 @@ class SecurityGroupMasterController {
       const offset = (page - 1) * limit
 
       try {
-        const dataItems = await SecurityGroupMasterService.getInstance().pagination(offset, limit)
+        const dataItems = await SecurityGroupMasterRepository.getInstance().pagination({ limit, offset })
         response.status(200).send({ ...dataItems, currentPage: page })
       } catch (error) {
         console.error('Error fetching SecurityGroupMasters:', error)
@@ -63,7 +64,7 @@ class SecurityGroupMasterController {
       }
     } else {
       try {
-        const SecurityGroupMastersInformation = await SecurityGroupMasterService.getInstance().findAll()
+        const SecurityGroupMastersInformation = await SecurityGroupMasterRepository.getInstance().findAll()
         response.status(200).json({ status: 200, data: SecurityGroupMastersInformation })
       } catch (error) {
         if(error instanceof CustomError) {
