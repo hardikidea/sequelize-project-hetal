@@ -36,4 +36,3 @@ dBase.sequelize = sequelize
 dBase.Sequelize = Sequelize
 
 export { sequelize, dBase }
-

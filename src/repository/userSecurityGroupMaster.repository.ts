@@ -1,6 +1,5 @@
-
-import { UserSecurityGroupMaster } from "../database/models"
-import { GenericRepository } from "../core/generic-repository.service"
+import { UserSecurityGroupMaster } from '../database/models'
+import { GenericRepository } from '../core/generic-repository.service'
 
 export class UserSecurityGroupMasterRepository extends GenericRepository<UserSecurityGroupMaster> {
   private static instance: UserSecurityGroupMasterRepository

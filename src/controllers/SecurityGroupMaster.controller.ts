@@ -3,10 +3,9 @@ import { Router, Request, Response, NextFunction } from 'express'
 import { CustomError } from '../utils/CustomError'
 import { SecurityGroupMasterRepository } from '../repository'
 
-
 class SecurityGroupMasterController {
   public router: Router
-  
+
   private constructor() {
     this.router = Router()
     this.initRoutes()
@@ -67,8 +66,8 @@ class SecurityGroupMasterController {
         const SecurityGroupMastersInformation = await SecurityGroupMasterRepository.getInstance().findAll()
         response.status(200).json({ status: 200, data: SecurityGroupMastersInformation })
       } catch (error) {
-        if(error instanceof CustomError) {
-          response.status(error.statusCode).send({ status: error.statusCode, message: error.message})
+        if (error instanceof CustomError) {
+          response.status(error.statusCode).send({ status: error.statusCode, message: error.message })
         } else {
           response.status(500).send(error)
         }

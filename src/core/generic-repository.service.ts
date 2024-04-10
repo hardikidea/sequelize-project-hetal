@@ -4,11 +4,11 @@ import { FindOptions, WhereOptions } from 'sequelize'
 import _ from 'lodash'
 import { CustomError } from '../utils/CustomError'
 import { IWrite, IRead, IDelete } from './IRepository.interface'
-import { TPaginationData } from './generic.type'
+import { TPaginationData } from '../types/TPaginationData.type'
 
 export abstract class GenericRepository<T extends Model<T>> implements IWrite<T>, IRead<T>, IDelete<T> {
   constructor(private model: ModelCtor<T>) {
-    console.log('Model:', model)
+    // console.log('Model:', model)
   }
   async findById(id: number): Promise<T | null> {
     try {
@@ -25,9 +25,9 @@ export abstract class GenericRepository<T extends Model<T>> implements IWrite<T>
       return await this.model.create(item as any)
     } catch (error) {
       if (error instanceof UniqueConstraintError) {
-        throw error;
+        throw error
       } else {
-        throw new Error('Error creating new item');
+        throw new Error('Error creating new item')
       }
     }
   }
@@ -63,7 +63,7 @@ export abstract class GenericRepository<T extends Model<T>> implements IWrite<T>
       }
     }
   }
-  
+
   async pagination(options: FindOptions): Promise<TPaginationData<T>> {
     try {
       const { count, rows } = await this.model.findAndCountAll(options)

@@ -1,8 +1,7 @@
-import { FindOptions } from "sequelize"
-import { TPaginationData } from "./generic.type"
+import { FindOptions } from 'sequelize'
+import { TPaginationData } from '../types/TPaginationData.type'
 
 export interface IWriteRepository<T> {
-
   createRecord(item: Partial<T>): Promise<T>
   updateRecord(id: number, item: Partial<T>): Promise<[affectedCount: number]>
 }

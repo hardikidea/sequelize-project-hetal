@@ -1,4 +1,3 @@
-// src/index.ts
 import 'reflect-metadata'
 import { ServerApplication } from './server'
 

@@ -5,7 +5,7 @@ import { UserSecurityGroupMasterRepository } from '../repository'
 
 class UserSecurityGroupMasterController {
   public router: Router
-  
+
   private constructor() {
     this.router = Router()
     this.initRoutes()
@@ -66,8 +66,8 @@ class UserSecurityGroupMasterController {
         const UserSecurityGroupMastersInformation = await UserSecurityGroupMasterRepository.getInstance().findAll()
         response.status(200).json({ status: 200, data: UserSecurityGroupMastersInformation })
       } catch (error) {
-        if(error instanceof CustomError) {
-          response.status(error.statusCode).send({ status: error.statusCode, message: error.message})
+        if (error instanceof CustomError) {
+          response.status(error.statusCode).send({ status: error.statusCode, message: error.message })
         } else {
           response.status(500).send(error)
         }
