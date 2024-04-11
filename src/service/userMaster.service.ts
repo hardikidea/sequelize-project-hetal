@@ -7,29 +7,29 @@ import { TPaginationData } from '../types/TPaginationData.type'
 
 @Service()
 export class UserMasterService implements IWriteRepository<UserMaster>, IReadRepository<UserMaster>, IDeleteRepository<UserMaster> {
-  constructor(public userMasterRepository: UserMasterRepository) {}
+  constructor(public repositoryInstance: UserMasterRepository) {}
   async deleteRecord(option?: FindOptions): Promise<number> {
-    return this.userMasterRepository.delete(option ?? {})
+    return this.repositoryInstance.delete(option ?? {})
   }
   async fetchRecord(option?: FindOptions): Promise<UserMaster | null> {
-    return await this.userMasterRepository.find(option ?? {})
+    return await this.repositoryInstance.find(option ?? {})
   }
   async fetchAllRecord(option?: FindOptions): Promise<UserMaster[]> {
-    return this.userMasterRepository.findAll(option ?? {})
+    return this.repositoryInstance.findAll(option ?? {})
   }
   async fetchById(id: number): Promise<UserMaster | null> {
-    return this.userMasterRepository.findById(id)
+    return this.repositoryInstance.findById(id)
   }
   async fetchPagination(page: number, limit: number): Promise<TPaginationData<UserMaster>> {
     const offset = (page - 1) * limit
-    const dataItems = await this.userMasterRepository.pagination({ limit, offset })
+    const dataItems = await this.repositoryInstance.pagination({ limit, offset })
     return { ...dataItems, currentPage: page }
   }
   async createRecord(item: Partial<UserMaster>): Promise<UserMaster> {
-    return await this.userMasterRepository.create(item)
+    return await this.repositoryInstance.create(item)
   }
   async updateRecord(id: number, item: Partial<UserMaster>): Promise<number> {
-    return await this.userMasterRepository.update(id, item)
+    return await this.repositoryInstance.update(id, item)
   }
 
   // async login(email: string, password: string) {

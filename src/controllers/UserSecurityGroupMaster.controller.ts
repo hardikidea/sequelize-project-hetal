@@ -1,79 +1,103 @@
-// src/controllers/UserController.ts
-import { Router, Request, Response, NextFunction } from 'express'
-import { CustomError } from '../utils/CustomError'
-import { UserSecurityGroupMasterRepository } from '../repository'
+import 'reflect-metadata'
+import { Service } from 'typedi'
+import { NextFunction, Request, Response, Router } from 'express'
+import { UserSecurityGroupMaster } from '@database/models'
+import { UserSecurityGroupMasterService } from '@service/userSecurityGroupMaster.service'
+import { CustomError } from '@utils/CustomError'
+import { ValidateRequests } from '@core/validation'
+import { ValidationForCreateSecurityGroup, ValidationForId, ValidationForPagination } from '@validations/index'
 
-class UserSecurityGroupMasterController {
+@Service()
+export class UserSecurityGroupMasterController {
   public router: Router
-
-  private constructor() {
+  
+  constructor(public serviceInstance: UserSecurityGroupMasterService) {
     this.router = Router()
     this.initRoutes()
   }
 
-  private static instance: UserSecurityGroupMasterController
-
-  static getInstance(): UserSecurityGroupMasterController {
-    if (!UserSecurityGroupMasterController.instance) {
-      UserSecurityGroupMasterController.instance = new UserSecurityGroupMasterController()
-    }
-    return UserSecurityGroupMasterController.instance
+  initRoutes(): void {
+    this.router.get('/', ValidationForPagination, ValidateRequests, this.fetchAll)
+    this.router.get('/:id', ValidationForId, ValidateRequests, this.fetchById)
+    this.router.post('/', ValidationForCreateSecurityGroup, ValidateRequests, this.create)
+    this.router.put('/:id', ValidationForId, ValidateRequests, this.update)
+    this.router.delete('/:id', ValidationForId, ValidateRequests, this.removeById)
   }
 
-  private initRoutes(): void {
-    this.router.get('/', this.getAllUserSecurityGroupMasterInformation)
-    this.router.get('/:id', this.getUserSecurityGroupMasterById)
-    this.router.delete('/:id', this.removeUserSecurityGroupMasterById)
-  }
-
-  async getUserSecurityGroupMasterById(req: Request, res: Response, next: NextFunction) {
-    const id: number = parseInt(req.params.id, 0)
-    const UserSecurityGroupMasterInfo = await UserSecurityGroupMasterRepository.getInstance().delete({ where: { id } })
-
-    if (UserSecurityGroupMasterInfo) {
-      res.status(200).json({ status: 200, data: UserSecurityGroupMasterInfo })
-    } else {
-      next(new CustomError(404, 'UserSecurityGroupMaster not found'))
+  create = async (request: Request, response: Response, next: NextFunction) => {
+    
+    try {
+      const userSecurityGroupMasterCreate: Partial<UserSecurityGroupMaster> = request.body
+      await this.serviceInstance.createRecord(userSecurityGroupMasterCreate)
+      response.status(200).send({ status: 200, data: `[name] created successfully.` })
+    } catch (error) {
+      response.status(500).send('Internal Server Error')
     }
   }
 
-  async removeUserSecurityGroupMasterById(request: Request, response: Response, next: NextFunction) {
+  update = async (request: Request, response: Response, next: NextFunction) => {
     const id: number = parseInt(request.params.id, 0)
-    const isRemoved = await UserSecurityGroupMasterRepository.getInstance().delete({ where: { id } })
-
-    if (isRemoved) {
-      response.status(200).json({ status: 200, data: `UserSecurityGroupMaster[${id}] removed successfully` })
+    try {
+      const userSecurityGroupMasterUpdate: Partial<UserSecurityGroupMaster> = request.body
+      const updatedCount = await this.serviceInstance.updateRecord(id, userSecurityGroupMasterUpdate)
+      if(updatedCount > 0) {
+        response.status(200).send({ status: 200, data: `${UserSecurityGroupMaster.tableName} [id] updated successfully.` })
+      } else {
+        response.status(400).send(`${UserSecurityGroupMaster.tableName} provided with [id] not found or Invalid Request.`)
+      }
+      
+    } catch (error) {
+      response.status(500).send('Internal Server Error')
+    }
+  }
+  
+  fetchById = async (req: Request, res: Response, next: NextFunction) => {
+    const id: number = parseInt(req.params.id, 0)
+    const userInfo = await this.serviceInstance.fetchById(id)
+    if (userInfo) {
+      res.status(200).json({ status: 200, data: userInfo })
     } else {
-      next(new CustomError(404, 'UserSecurityGroupMaster not found'))
+      next(new CustomError(404, `${UserSecurityGroupMaster.tableName} not found with id: id`))
+    }
+  }
+  
+  removeById = async (request: Request, response: Response, next: NextFunction) => {
+    const id: number = parseInt(request.params.id, 0)
+    const isRemoved = await this.serviceInstance.deleteRecord({ where: { id } })
+    if (isRemoved) {
+      response.status(200).json({ status: 200, data: `${UserSecurityGroupMaster.tableName}[id] removed successfully` })
+    } else {
+      next(new CustomError(404, `${UserSecurityGroupMaster.tableName} not found with id: id`))
     }
   }
 
-  async getAllUserSecurityGroupMasterInformation(request: Request, response: Response, next: NextFunction) {
+  fetchAll = async (request: Request, response: Response) => {
+    
     if (request.query.page && request.query.limit) {
-      const page = parseInt(request.query.page as string, 10) || 1
-      const limit = parseInt(request.query.limit as string, 10) || 10
-      const offset = (page - 1) * limit
-
-      try {
-        const dataItems = await UserSecurityGroupMasterRepository.getInstance().pagination({ limit, offset })
-        response.status(200).send({ ...dataItems, currentPage: page })
-      } catch (error) {
-        console.error('Error fetching UserSecurityGroupMasters:', error)
-        response.status(500).send('Internal Server Error')
-      }
+      const page = parseInt(request.query.page.toString())
+      const limit = parseInt(request.query.limit.toString())
+      response.status(200).send({ status: 200, data: await this.paginationRequest(page, limit) })
     } else {
-      try {
-        const UserSecurityGroupMastersInformation = await UserSecurityGroupMasterRepository.getInstance().findAll()
-        response.status(200).json({ status: 200, data: UserSecurityGroupMastersInformation })
-      } catch (error) {
-        if (error instanceof CustomError) {
-          response.status(error.statusCode).send({ status: error.statusCode, message: error.message })
-        } else {
-          response.status(500).send(error)
-        }
-      }
+      response.status(200).send({ status: 200, data: await this.fetchAllRecords()})
+    }
+  }
+
+  private async fetchAllRecords() {
+    try {
+      return await this.serviceInstance.fetchAllRecord({})
+    } catch (error) {
+      console.error('Error fetching fetchAllUserMasters:', error)
+      throw new CustomError(500, 'Internal Server Error')
+    }
+  }
+
+  private async paginationRequest(page: number, limit: number) {
+    try {
+      return await this.serviceInstance.fetchPagination(page, limit)
+    } catch (error) {
+      console.error('Error fetching paginationRequest:', error)
+      throw new CustomError(500, 'Internal Server Error')
     }
   }
 }
 
-export default UserSecurityGroupMasterController
