@@ -32,10 +32,10 @@ export abstract class GenericRepository<T extends Model<T>> implements IWrite<T>
     }
   }
 
-  async update(id: number, item: Partial<T>): Promise<[affectedCount: number]> {
+  async update(id: number, item: Partial<T>): Promise<number> {
     try {
       const whereClause: WhereOptions = { id }
-      return await this.model.update(item, { where: whereClause })
+      return (await this.model.update(item, { where: whereClause }))[0]
     } catch (error) {
       console.error(error)
       throw new Error(`Error updating item with id ${id}`)

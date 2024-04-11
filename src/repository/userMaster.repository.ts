@@ -8,15 +8,6 @@ export class UserMasterRepository extends GenericRepository<UserMaster> {
     super(UserMaster)
   }
 
-  public login = async (emailAddress: string, password: string) => {
-    try {
-      const userInformation = await this.find({ where: { email: emailAddress, password, isActive: true } })
-      if (userInformation) {
-        return userInformation
-      }
-    } catch (error) {}
-  }
-
   public sayHello = () => {
     try {
       return 'sayHello'

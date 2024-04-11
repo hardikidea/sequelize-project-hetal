@@ -52,7 +52,7 @@ UserMaster.init(
     freezeTableName: true,
     // paranoid: true, // Enable "soft deletes" for this model.
     defaultScope: {
-      attributes: { exclude: ['password'] },
+      // attributes: { exclude: ['password'] },
       where: { isActive: true },
     },
     hooks: {

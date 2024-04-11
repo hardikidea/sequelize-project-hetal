@@ -7,7 +7,7 @@ import { TPaginationData } from '../types/TPaginationData.type'
 
 @Service()
 export class UserMasterService implements IWriteRepository<UserMaster>, IReadRepository<UserMaster>, IDeleteRepository<UserMaster> {
-  constructor(private userMasterRepository: UserMasterRepository) {}
+  constructor(public userMasterRepository: UserMasterRepository) {}
   async deleteRecord(option?: FindOptions): Promise<number> {
     return this.userMasterRepository.delete(option ?? {})
   }
@@ -28,11 +28,11 @@ export class UserMasterService implements IWriteRepository<UserMaster>, IReadRep
   async createRecord(item: Partial<UserMaster>): Promise<UserMaster> {
     return await this.userMasterRepository.create(item)
   }
-  async updateRecord(id: number, item: Partial<UserMaster>): Promise<[affectedCount: number]> {
+  async updateRecord(id: number, item: Partial<UserMaster>): Promise<number> {
     return await this.userMasterRepository.update(id, item)
   }
 
-  async login(email: string, password: string) {
-    return await this.userMasterRepository.login(email, password)
-  }
+  // async login(email: string, password: string) {
+  //   return await this.userMasterRepository.login(email, password)
+  // }
 }

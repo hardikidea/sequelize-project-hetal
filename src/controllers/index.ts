@@ -1,5 +1,7 @@
-import { UserMasterController } from "./UserMasterController";
+import { SignupController } from "./signup.controller";
+import { UserMasterController } from "./userMaster.controller";
 
 export {
-    UserMasterController
+    UserMasterController,
+    SignupController
 }

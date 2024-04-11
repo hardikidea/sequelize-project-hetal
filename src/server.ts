@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import express, { Express } from 'express'
+import express, { Express, NextFunction } from 'express'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import { CustomError } from './utils/CustomError'
@@ -8,15 +8,14 @@ import { requestLoggerMiddleware } from './middlewares/requestLogger.middleware'
 import logger from './utils/logger'
 import cors from 'cors'
 import { ValidateAuthentication } from './database'
-import Container, { Service } from 'typedi'
-import { UserMasterController } from '@controllers/index'
+import Container from 'typedi'
+import { UserMasterController } from '@controllers/userMaster.controller'
+import { SignupController } from './controllers'
+import { SecurityGroupMasterController } from '@controllers/securityGroupMaster.controller'
 
-@Service()
 export class ServerApplication {
   public expressApp: Express
   public baseRouter: string = '/api'
-
-  private userMasterController = Container.get(UserMasterController);
 
   constructor() {
     this.expressApp = express()
@@ -45,29 +44,33 @@ export class ServerApplication {
   }
 
   private mountRoutes(): void {
+    
+    const userMasterController = Container.get(UserMasterController);
+    const signupController = Container.get(SignupController);
+    const securityGroupMasterController = Container.get(SecurityGroupMasterController);
     // const homeController = new HomeController()
     // const authController = new AuthController()
-    // const userController = Container.get(UserMasterController)
     // this.expressApp.use(this.getRouterURL('/auth'), authController.router)
     // this.expressApp.use(this.getRouterURL('/home'), homeController.router)
-    this.expressApp.use(this.getRouterURL('/user'), this.userMasterController.router)
+    this.expressApp.use(this.getRouterURL('/user'), userMasterController.router)
+    this.expressApp.use(this.getRouterURL('/securitygroup'), securityGroupMasterController.router)
+    this.expressApp.use(this.getRouterURL('/public'), signupController.router)
+    
     // this.expressApp.use(this.getRouterURL('/securitygroup'), SecurityGroupMasterController.getInstance().router)
     // this.expressApp.use(this.getRouterURL('/user/securitygroup'), UserSecurityGroupMasterController.getInstance().router)
-    // this.expressApp.use(this.getRouterURL('/register'), this.registrationController.router)
-
+    // this.expressApp.use(this.getRouterURL('/register'), Container.get(SignupController).router)
     // Global error handler
     this.globalErrorHandler(this.expressApp)
   }
 
   private globalErrorHandler(application: Express): void {
-    application.use((err: Error, req: Request, res: Response) => {
+    application.use((err: Error, req: Request, res: Response, next: NextFunction) => {
       if (err instanceof CustomError) {
         logger.error(`${err.statusCode || 500} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`)
         res.status(err.statusCode).json({ error: err.message })
       } else {
         console.error(err) // For debugging
-        // res.status(500).json({ message: 'Internal Server Error' });
-        res.status(500).send({ error: err.message || 'An unknown error occurred' })
+        res.status(500).send({ error: 'An unknown error occurred' })
       }
     })
   }

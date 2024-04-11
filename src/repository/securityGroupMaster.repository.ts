@@ -1,17 +1,19 @@
-import { SecurityGroupMaster } from '../database/models'
+import { Service } from 'typedi'
 import { GenericRepository } from '../core/generic-repository.service'
+import { SecurityGroupMaster } from '@database/models'
 
+@Service()
 export class SecurityGroupMasterRepository extends GenericRepository<SecurityGroupMaster> {
-  private static instance: SecurityGroupMasterRepository
-
-  private constructor() {
+  constructor() {
     super(SecurityGroupMaster)
   }
 
-  public static getInstance(): SecurityGroupMasterRepository {
-    if (!SecurityGroupMasterRepository.instance) {
-      SecurityGroupMasterRepository.instance = new SecurityGroupMasterRepository()
+  public sayHello = () => {
+    try {
+      return 'sayHello'
+    } catch (error) {
+      console.error(error)
+      throw new Error('Error fetching all items')
     }
-    return SecurityGroupMasterRepository.instance
   }
 }
