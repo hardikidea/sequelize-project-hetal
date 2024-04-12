@@ -29,13 +29,7 @@ export class UserMasterController {
 
   initUserTokenRoutes(): void {
     const controller = Container.get(UserTokenMasterController)
-    const tokenRouter = Router()
-    tokenRouter.get('/', ValidationForPagination, ValidateRequests, controller.fetchAll)
-    tokenRouter.get('/:id', ValidationForId, ValidateRequests, controller.fetchById)
-    tokenRouter.post('/', ValidationForCreateSecurityGroup, ValidateRequests, controller.create)
-    tokenRouter.put('/:id', ValidationForId, ValidateRequests, controller.update)
-    tokenRouter.delete('/:id', ValidationForId, ValidateRequests, controller.removeById)
-    this.router.use('/token', tokenRouter)
+    this.router.use('/token', controller.router)
   }
 
   create = async (request: Request, response: Response, next: NextFunction) => {
