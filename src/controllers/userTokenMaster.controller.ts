@@ -1,25 +1,22 @@
 import 'reflect-metadata'
 import { Service } from 'typedi'
 import { NextFunction, Request, Response, Router } from 'express'
-import { UserMaster } from '@database/models'
-import { UserMasterService } from '@service/userMaster.service'
+import { UserTokenMaster } from '@database/models'
+import { UserTokenMasterService } from '@service/userTokenMaster.service'
 import { CustomError } from '@utils/CustomError'
 import { ValidateRequests } from '@core/validation'
 import { ValidationForCreateSecurityGroup, ValidationForId, ValidationForPagination } from '@validations/index'
-import { Container } from 'typedi'
-import { UserTokenMasterController } from './userTokenMaster.controller'
 
 @Service()
-export class UserMasterController {
+export class UserTokenMasterController {
   public router: Router
 
-  constructor(public serviceInstance: UserMasterService) {
+  constructor(public serviceInstance: UserTokenMasterService) {
     this.router = Router()
     this.initRoutes()
   }
 
   initRoutes(): void {
-    this.initUserTokenRoutes()
     this.router.get('/', ValidationForPagination, ValidateRequests, this.fetchAll)
     this.router.get('/:id', ValidationForId, ValidateRequests, this.fetchById)
     this.router.post('/', ValidationForCreateSecurityGroup, ValidateRequests, this.create)
@@ -27,22 +24,11 @@ export class UserMasterController {
     this.router.delete('/:id', ValidationForId, ValidateRequests, this.removeById)
   }
 
-  initUserTokenRoutes(): void {
-    const controller = Container.get(UserTokenMasterController)
-    const tokenRouter = Router()
-    tokenRouter.get('/', ValidationForPagination, ValidateRequests, controller.fetchAll)
-    tokenRouter.get('/:id', ValidationForId, ValidateRequests, controller.fetchById)
-    tokenRouter.post('/', ValidationForCreateSecurityGroup, ValidateRequests, controller.create)
-    tokenRouter.put('/:id', ValidationForId, ValidateRequests, controller.update)
-    tokenRouter.delete('/:id', ValidationForId, ValidateRequests, controller.removeById)
-    this.router.use('/token', tokenRouter)
-  }
-
   create = async (request: Request, response: Response, next: NextFunction) => {
     try {
-      const userMasterCreate: Partial<UserMaster> = request.body
-      await this.serviceInstance.createRecord(userMasterCreate)
-      response.status(200).send({ status: 200, data: `[${userMasterCreate.email}] created successfully.` })
+      const userTokenMasterCreate: Partial<UserTokenMaster> = request.body
+      await this.serviceInstance.createRecord(userTokenMasterCreate)
+      response.status(200).send({ status: 200, data: `[name] created successfully.` })
     } catch (error) {
       response.status(500).send('Internal Server Error')
     }
@@ -51,12 +37,12 @@ export class UserMasterController {
   update = async (request: Request, response: Response, next: NextFunction) => {
     const id: number = parseInt(request.params.id, 0)
     try {
-      const userMasterUpdate: Partial<UserMaster> = request.body
-      const updatedCount = await this.serviceInstance.updateRecord(id, userMasterUpdate, true)
+      const userTokenMasterUpdate: Partial<UserTokenMaster> = request.body
+      const updatedCount = await this.serviceInstance.updateRecord(id, userTokenMasterUpdate)
       if (updatedCount > 0) {
-        response.status(200).send({ status: 200, data: `${UserMaster.tableName} [${id}] updated successfully.` })
+        response.status(200).send({ status: 200, data: `${UserTokenMaster.tableName} [id] updated successfully.` })
       } else {
-        response.status(400).send(`${UserMaster.tableName} provided with [${id}] not found or Invalid Request.`)
+        response.status(400).send(`${UserTokenMaster.tableName} provided with [id] not found or Invalid Request.`)
       }
     } catch (error) {
       response.status(500).send('Internal Server Error')
@@ -69,17 +55,18 @@ export class UserMasterController {
     if (userInfo) {
       res.status(200).json({ status: 200, data: userInfo })
     } else {
-      next(new CustomError(404, `${UserMaster.tableName} not found with id: id`))
+      next(new CustomError(404, `${UserTokenMaster.tableName} not found with id: id`))
     }
   }
 
   removeById = async (request: Request, response: Response, next: NextFunction) => {
     const id: number = parseInt(request.params.id, 0)
+    console.log('id:', id)
     const isRemoved = await this.serviceInstance.deleteRecord({ where: { id } })
     if (isRemoved) {
-      response.status(200).json({ status: 200, data: `${UserMaster.tableName}[${id}] removed successfully` })
+      response.status(200).json({ status: 200, data: `${UserTokenMaster.tableName}[id] removed successfully` })
     } else {
-      next(new CustomError(404, `${UserMaster.tableName} not found with id: [${id}]`))
+      next(new CustomError(404, `${UserTokenMaster.tableName} not found with id: id`))
     }
   }
 

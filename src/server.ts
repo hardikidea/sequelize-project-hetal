@@ -3,15 +3,13 @@ import express, { Express, NextFunction } from 'express'
 import { Request, Response } from 'express'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
+import cors from 'cors'
+import logger from './utils/logger'
 import { CustomError } from './utils/CustomError'
 import { requestLoggerMiddleware } from './middlewares/requestLogger.middleware'
-import logger from './utils/logger'
-import cors from 'cors'
-import { ValidateAuthentication } from './database'
 import Container from 'typedi'
-import { UserMasterController } from '@controllers/userMaster.controller'
-import { SignupController } from './controllers'
-import { SecurityGroupMasterController } from '@controllers/securityGroupMaster.controller'
+import { ValidateAuthentication } from './database'
+import { SecurityGroupMasterController, SignupController, UserMasterController } from '@controllers/index'
 
 export class ServerApplication {
   public expressApp: Express
@@ -44,11 +42,10 @@ export class ServerApplication {
   }
 
   private mountRoutes(): void {
-    
-    const userMasterController = Container.get(UserMasterController);
-    const signupController = Container.get(SignupController);
-    const securityGroupMasterController = Container.get(SecurityGroupMasterController);
-    
+    const userMasterController = Container.get(UserMasterController)
+    const signupController = Container.get(SignupController)
+    const securityGroupMasterController = Container.get(SecurityGroupMasterController)
+
     this.expressApp.use(this.getRouterURL('/user'), userMasterController.router)
     this.expressApp.use(this.getRouterURL('/securitygroup'), securityGroupMasterController.router)
     this.expressApp.use(this.getRouterURL('/public'), signupController.router)

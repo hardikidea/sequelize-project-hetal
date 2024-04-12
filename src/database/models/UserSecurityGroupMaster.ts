@@ -46,6 +46,23 @@ UserSecurityGroupMaster.init(
     sequelize,
     modelName: 'UserSecurityGroupMaster',
     freezeTableName: true,
+    timestamps: true,
+    createdAt: true,
+    updatedAt: true,
+    deletedAt: true,
+    paranoid: true,
+    underscored: false,
+    hasTrigger: false,
+    defaultScope: {
+      attributes: { exclude: [], include: [] },
+      // where: { isActive: true },
+    },
+    hooks: {
+      beforeSave: async (instance: UserSecurityGroupMaster) => {},
+      afterSave: async (instance: UserSecurityGroupMaster) => {},
+      afterDestroy: async (instance: UserSecurityGroupMaster) => {},
+      beforeDestroy: async (instance: UserSecurityGroupMaster) => {},
+    },
   },
 )
 

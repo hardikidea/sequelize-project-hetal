@@ -6,7 +6,9 @@ import { TPaginationData } from '../types/TPaginationData.type'
 import { SecurityGroupMasterRepository } from '@repository/securityGroupMaster.repository'
 
 @Service()
-export class SecurityGroupMasterService implements IWriteRepository<SecurityGroupMaster>, IReadRepository<SecurityGroupMaster>, IDeleteRepository<SecurityGroupMaster> {
+export class SecurityGroupMasterService
+  implements IWriteRepository<SecurityGroupMaster>, IReadRepository<SecurityGroupMaster>, IDeleteRepository<SecurityGroupMaster>
+{
   constructor(public securityGroupMasterRepository: SecurityGroupMasterRepository) {}
   async deleteRecord(option?: FindOptions): Promise<number> {
     return this.securityGroupMasterRepository.delete(option ?? {})
@@ -28,7 +30,7 @@ export class SecurityGroupMasterService implements IWriteRepository<SecurityGrou
   async createRecord(item: Partial<SecurityGroupMaster>): Promise<SecurityGroupMaster> {
     return await this.securityGroupMasterRepository.create(item)
   }
-  async updateRecord(id: number, item: Partial<SecurityGroupMaster>): Promise<number> {
-    return await this.securityGroupMasterRepository.update(id, item)
+  async updateRecord(id: number, item: Partial<SecurityGroupMaster>, isForceToUpdate: boolean = false): Promise<number> {
+    return await this.securityGroupMasterRepository.update(id, item, isForceToUpdate)
   }
 }

@@ -10,7 +10,7 @@ import { ValidationForCreateSecurityGroup, ValidationForId, ValidationForPaginat
 @Service()
 export class UserSecurityGroupMasterController {
   public router: Router
-  
+
   constructor(public serviceInstance: UserSecurityGroupMasterService) {
     this.router = Router()
     this.initRoutes()
@@ -25,7 +25,6 @@ export class UserSecurityGroupMasterController {
   }
 
   create = async (request: Request, response: Response, next: NextFunction) => {
-    
     try {
       const userSecurityGroupMasterCreate: Partial<UserSecurityGroupMaster> = request.body
       await this.serviceInstance.createRecord(userSecurityGroupMasterCreate)
@@ -40,17 +39,16 @@ export class UserSecurityGroupMasterController {
     try {
       const userSecurityGroupMasterUpdate: Partial<UserSecurityGroupMaster> = request.body
       const updatedCount = await this.serviceInstance.updateRecord(id, userSecurityGroupMasterUpdate)
-      if(updatedCount > 0) {
+      if (updatedCount > 0) {
         response.status(200).send({ status: 200, data: `${UserSecurityGroupMaster.tableName} [id] updated successfully.` })
       } else {
         response.status(400).send(`${UserSecurityGroupMaster.tableName} provided with [id] not found or Invalid Request.`)
       }
-      
     } catch (error) {
       response.status(500).send('Internal Server Error')
     }
   }
-  
+
   fetchById = async (req: Request, res: Response, next: NextFunction) => {
     const id: number = parseInt(req.params.id, 0)
     const userInfo = await this.serviceInstance.fetchById(id)
@@ -60,7 +58,7 @@ export class UserSecurityGroupMasterController {
       next(new CustomError(404, `${UserSecurityGroupMaster.tableName} not found with id: id`))
     }
   }
-  
+
   removeById = async (request: Request, response: Response, next: NextFunction) => {
     const id: number = parseInt(request.params.id, 0)
     const isRemoved = await this.serviceInstance.deleteRecord({ where: { id } })
@@ -72,13 +70,12 @@ export class UserSecurityGroupMasterController {
   }
 
   fetchAll = async (request: Request, response: Response) => {
-    
     if (request.query.page && request.query.limit) {
       const page = parseInt(request.query.page.toString())
       const limit = parseInt(request.query.limit.toString())
       response.status(200).send({ status: 200, data: await this.paginationRequest(page, limit) })
     } else {
-      response.status(200).send({ status: 200, data: await this.fetchAllRecords()})
+      response.status(200).send({ status: 200, data: await this.fetchAllRecords() })
     }
   }
 
@@ -100,4 +97,3 @@ export class UserSecurityGroupMasterController {
     }
   }
 }
-

@@ -1,34 +1,37 @@
 import { Service } from 'typedi'
-import { UserMasterRepository } from '../repository'
-import { UserMaster } from '../database/models'
+import { UserTokenMaster } from '../database/models'
+import { UserTokenMasterRepository } from '../repository'
 import { FindOptions } from 'sequelize'
 import { IWriteRepository, IReadRepository, IDeleteRepository } from '../core/IGenericRepository.interface'
 import { TPaginationData } from '../types/TPaginationData.type'
 
 @Service()
-export class UserMasterService implements IWriteRepository<UserMaster>, IReadRepository<UserMaster>, IDeleteRepository<UserMaster> {
-  constructor(public repositoryInstance: UserMasterRepository) {}
+export class UserTokenMasterService
+  implements IWriteRepository<UserTokenMaster>, IReadRepository<UserTokenMaster>, IDeleteRepository<UserTokenMaster>
+{
+  constructor(public repositoryInstance: UserTokenMasterRepository) {}
+
   async deleteRecord(option?: FindOptions): Promise<number> {
     return this.repositoryInstance.delete(option ?? {})
   }
-  async fetchRecord(option?: FindOptions): Promise<UserMaster | null> {
+  async fetchRecord(option?: FindOptions): Promise<UserTokenMaster | null> {
     return await this.repositoryInstance.find(option ?? {})
   }
-  async fetchAllRecord(option?: FindOptions): Promise<UserMaster[]> {
+  async fetchAllRecord(option?: FindOptions): Promise<UserTokenMaster[]> {
     return this.repositoryInstance.findAll(option ?? {})
   }
-  async fetchById(id: number): Promise<UserMaster | null> {
+  async fetchById(id: number): Promise<UserTokenMaster | null> {
     return this.repositoryInstance.findById(id)
   }
-  async fetchPagination(page: number, limit: number): Promise<TPaginationData<UserMaster>> {
+  async fetchPagination(page: number, limit: number): Promise<TPaginationData<UserTokenMaster>> {
     const offset = (page - 1) * limit
     const dataItems = await this.repositoryInstance.pagination({ limit, offset })
     return { ...dataItems, currentPage: page }
   }
-  async createRecord(item: Partial<UserMaster>): Promise<UserMaster> {
+  async createRecord(item: Partial<UserTokenMaster>): Promise<UserTokenMaster> {
     return await this.repositoryInstance.create(item)
   }
-  async updateRecord(id: number, item: Partial<UserMaster>, isForceToUpdate: boolean = false): Promise<number> {
+  async updateRecord(id: number, item: Partial<UserTokenMaster>, isForceToUpdate: boolean = false): Promise<number> {
     return await this.repositoryInstance.update(id, item, isForceToUpdate)
   }
 }

@@ -5,35 +5,47 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('UserTokenMaster', {
       id: {
-        allowNull: false,
+        type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       userId: {
-        type: Sequelize.STRING,
-        unique: true,
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
       token: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
+        validate: {
+          notEmpty: true,
+        },
       },
-      type: {
+      expiredOn: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        unique: true,
+        validate: {
+          notEmpty: true,
+        },
+      },
+      tokenType: {
         type: Sequelize.INTEGER,
         allowNull: false,
-      },
-      isActive: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true,
+        validate: {
+          notEmpty: true,
+        },
       },
       createdAt: {
-        allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
       },
       updatedAt: {
-        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      deletedAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
       },

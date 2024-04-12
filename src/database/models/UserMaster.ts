@@ -9,11 +9,6 @@ class UserMaster extends Model {
   declare password: string
   declare isActive: CreationOptional<boolean>
   declare userSecurityGroupMaster?: CreationOptional<UserSecurityGroupMaster[]>
-
-  // Method to compare provided password with the hashed one
-  verifyPassword(password: string): Promise<boolean> {
-    return bcrypt.compare(password, this.password)
-  }
 }
 
 UserMaster.init(
@@ -40,27 +35,35 @@ UserMaster.init(
         notEmpty: true,
       },
     },
-    isActive: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-    },
   },
   {
     sequelize,
     modelName: 'UserMaster',
     freezeTableName: true,
-    // paranoid: true, // Enable "soft deletes" for this model.
+    timestamps: true,
+    createdAt: true,
+    updatedAt: true,
+    deletedAt: true,
+    paranoid: true,
+    underscored: false,
+    hasTrigger: false,
     defaultScope: {
-      // attributes: { exclude: ['password'] },
-      where: { isActive: true },
+      attributes: { exclude: [], include: [] },
     },
     hooks: {
-      beforeSave: async (user: UserMaster) => {
-        if (user.changed('password')) {
-          user.password = await bcrypt.hash(user.password, 10)
+      beforeSave: async (instance: UserMaster) => {
+        instance.password = await bcrypt.hash(instance.password, 10)
+      },
+      beforeUpdate: async (instance: UserMaster) => {
+        if (instance.changed('password')) {
+          instance.password = await bcrypt.hash(instance.password, 10)
+        } else {
+          console.log('Password has not changed, not re-hashing.')
         }
       },
+      afterSave: async (instance: UserMaster) => {},
+      afterDestroy: async (instance: UserMaster) => {},
+      beforeDestroy: async (instance: UserMaster) => {},
     },
   },
 )

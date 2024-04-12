@@ -5,12 +5,20 @@ import { ValidateRequests } from '@core/validation'
 import { UserMaster } from '@database/models'
 import { BaseController } from '@core/base.Controller'
 import { Service } from 'typedi'
+import { UserTokenMasterService } from '@service/userTokenMaster.service'
+import { v4 as uuid } from 'uuid'
+import { JWTPayLoad } from 'types/jwt.payload.type'
+import { CustomError } from '@utils/CustomError'
+const jwt = require('jsonwebtoken')
 
 @Service()
 export class SignupController extends BaseController {
   public router: Router
 
-  constructor(private userMasterService: UserMasterService) {
+  constructor(
+    private userMasterService: UserMasterService,
+    private userTokenMasterService: UserTokenMasterService,
+  ) {
     super()
     this.router = Router()
     this.initRoutes()
@@ -22,13 +30,17 @@ export class SignupController extends BaseController {
   }
   signUp = async (request: Request, response: Response, next: NextFunction) => {
     const { email, password } = request.body
-    
+
     try {
       const postUserInformation: Partial<UserMaster> = { email, password }
       await this.userMasterService.createRecord(postUserInformation)
       response.status(200).send({ status: 200, data: `[${email}] Registration done successfully.` })
     } catch (error) {
-      response.status(500).send('Internal Server Error')
+      if (error instanceof CustomError) {
+        response.status(400).send({ status: 400, error: error.message })
+      } else {
+        response.status(500).send('Internal Server Error')
+      }
     }
   }
 
@@ -36,13 +48,25 @@ export class SignupController extends BaseController {
     const { email, password } = request.body
 
     try {
-      const bcrypt = require('bcrypt');
-      const userInformation = await this.userMasterService.fetchRecord({ where: { email}, attributes: ['email', 'password']})
+      const bcrypt = require('bcrypt')
+      const userInformation = await this.userMasterService.fetchRecord({ where: { email }, attributes: ['id', 'email', 'password'] })
       if (!userInformation) {
         return response.status(400).send({ status: 401, data: `Invalid email or password` })
       } else {
-        if(await bcrypt.compare(password, userInformation.password)) {
-          response.cookie('permission', userInformation.email, {
+        if (await bcrypt.compare(password, userInformation.password)) {
+          const userTokenCreated = await this.userTokenMasterService.createRecord({
+            userId: userInformation.id,
+            token: uuid(),
+            tokenType: 1,
+          })
+          const jwtBody: JWTPayLoad = { name: userInformation.email, sessionId: userTokenCreated.token }
+
+          const JWTToken = jwt.sign(jwtBody, 'process.env.JWT_SECRET', {
+            subject: userTokenCreated.token,
+            expiresIn: `${process.env.JWT_EXPIRATION_DAYS || 5} days`,
+          })
+
+          response.cookie('permission', JWTToken, {
             path: '/',
             httpOnly: true,
             secure: true,
@@ -55,6 +79,7 @@ export class SignupController extends BaseController {
         }
       }
     } catch (error) {
+      // console.log(error)
       response.status(500).send('Internal Server Error')
     }
   }

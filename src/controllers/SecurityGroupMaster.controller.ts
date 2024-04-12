@@ -10,7 +10,7 @@ import { ValidationForCreateSecurityGroup, ValidationForId, ValidationForPaginat
 @Service()
 export class SecurityGroupMasterController {
   public router: Router
-  
+
   constructor(public serviceInstance: SecurityGroupMasterService) {
     this.router = Router()
     this.initRoutes()
@@ -25,7 +25,6 @@ export class SecurityGroupMasterController {
   }
 
   create = async (request: Request, response: Response, next: NextFunction) => {
-    
     try {
       const securityGroupMasterCreate: Partial<SecurityGroupMaster> = request.body
       await this.serviceInstance.createRecord(securityGroupMasterCreate)
@@ -40,17 +39,16 @@ export class SecurityGroupMasterController {
     try {
       const securityGroupMasterUpdate: Partial<SecurityGroupMaster> = request.body
       const updatedCount = await this.serviceInstance.updateRecord(id, securityGroupMasterUpdate)
-      if(updatedCount > 0) {
+      if (updatedCount > 0) {
         response.status(200).send({ status: 200, data: `${SecurityGroupMaster.tableName} [id] updated successfully.` })
       } else {
         response.status(400).send(`${SecurityGroupMaster.tableName} provided with [id] not found or Invalid Request.`)
       }
-      
     } catch (error) {
       response.status(500).send('Internal Server Error')
     }
   }
-  
+
   fetchById = async (req: Request, res: Response, next: NextFunction) => {
     const id: number = parseInt(req.params.id, 0)
     const userInfo = await this.serviceInstance.fetchById(id)
@@ -60,7 +58,7 @@ export class SecurityGroupMasterController {
       next(new CustomError(404, `${SecurityGroupMaster.tableName} not found with id: id`))
     }
   }
-  
+
   removeById = async (request: Request, response: Response, next: NextFunction) => {
     const id: number = parseInt(request.params.id, 0)
     const isRemoved = await this.serviceInstance.deleteRecord({ where: { id } })
@@ -72,13 +70,12 @@ export class SecurityGroupMasterController {
   }
 
   fetchAll = async (request: Request, response: Response) => {
-    
     if (request.query.page && request.query.limit) {
       const page = parseInt(request.query.page.toString())
       const limit = parseInt(request.query.limit.toString())
       response.status(200).send({ status: 200, data: await this.paginationRequest(page, limit) })
     } else {
-      response.status(200).send({ status: 200, data: await this.fetchAllRecords()})
+      response.status(200).send({ status: 200, data: await this.fetchAllRecords() })
     }
   }
 
@@ -100,4 +97,3 @@ export class SecurityGroupMasterController {
     }
   }
 }
-

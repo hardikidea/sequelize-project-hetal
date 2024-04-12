@@ -3,7 +3,7 @@ import { TPaginationData } from '../types/TPaginationData.type'
 
 interface IWrite<T> {
   create(item: Partial<T>): Promise<T>
-  update(id: number, item: Partial<T>): Promise<number>
+  update(id: number, item: Partial<T>, isForce: boolean): Promise<number>
 }
 
 interface IDelete<T> {

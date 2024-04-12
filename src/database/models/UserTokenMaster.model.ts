@@ -1,20 +1,19 @@
 import { Model, DataTypes, CreationOptional } from 'sequelize'
 import { sequelize } from './sync-model'
-import UserMaster from './UserMaster'
 
 class UserTokenMaster extends Model {
   declare id: CreationOptional<number>
   declare userId: number
   declare token: string
-  declare type: number
+  declare expiredOn: Date
+  declare tokenType: Number
   declare isActive: CreationOptional<boolean>
-  declare userMaster?: CreationOptional<UserMaster[]>
 }
 
 UserTokenMaster.init(
   {
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
       allowNull: false,
@@ -22,44 +21,47 @@ UserTokenMaster.init(
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
-      references: {
-        model: UserMaster,
-        key: 'id',
-      },
     },
     token: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
       validate: {
         notEmpty: true,
       },
     },
-    type: {
+    expiredOn: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    tokenType: {
       type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
         notEmpty: true,
       },
     },
-    isActive: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-    },
   },
   {
     sequelize,
     modelName: 'UserTokenMaster',
     freezeTableName: true,
-    // paranoid: true, // Enable "soft deletes" for this model.
+    timestamps: true,
+    createdAt: true,
+    updatedAt: true,
+    deletedAt: true,
+    paranoid: true,
+    underscored: false,
+    hasTrigger: false,
     defaultScope: {
-      where: { isActive: true },
+      attributes: { exclude: [], include: [] },
+      // where: { isActive: true },
     },
     hooks: {
-      // TODO;
+      beforeSave: async (instance: UserTokenMaster) => {},
+      afterSave: async (instance: UserTokenMaster) => {},
+      afterDestroy: async (instance: UserTokenMaster) => {},
+      beforeDestroy: async (instance: UserTokenMaster) => {},
     },
   },
 )

@@ -23,12 +23,14 @@ module.exports = {
         onDelete: 'CASCADE',
       },
       createdAt: {
-        allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
       },
       updatedAt: {
-        allowNull: false,
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      deletedAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
       },

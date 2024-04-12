@@ -1,4 +1,4 @@
-import { Model, ModelCtor, UniqueConstraintError } from 'sequelize'
+import { Model, ModelCtor, UniqueConstraintError, ValidationErrorItem } from 'sequelize'
 // import { IRepository } from './IRepository.interface'
 import { FindOptions, WhereOptions } from 'sequelize'
 import _ from 'lodash'
@@ -14,7 +14,6 @@ export abstract class GenericRepository<T extends Model<T>> implements IWrite<T>
     try {
       return await this.model.findByPk(id)
     } catch (error) {
-      console.error(error)
       throw new Error(`Error fetching item with id ${id}`)
     }
   }
@@ -25,19 +24,20 @@ export abstract class GenericRepository<T extends Model<T>> implements IWrite<T>
       return await this.model.create(item as any)
     } catch (error) {
       if (error instanceof UniqueConstraintError) {
-        throw error
-      } else {
-        throw new Error('Error creating new item')
+        const items = error.errors.map((err: ValidationErrorItem) => {
+          return `${_.startCase(err.path!)} [${err.value}] already exists.`
+        })
+        throw new CustomError(400, items.join(', '))
       }
+      throw error
     }
   }
 
-  async update(id: number, item: Partial<T>): Promise<number> {
+  async update(id: number, item: Partial<T>, isForceToUpdate: boolean = false): Promise<number> {
     try {
       const whereClause: WhereOptions = { id }
-      return (await this.model.update(item, { where: whereClause }))[0]
+      return (await this.model.update(item, { where: whereClause, individualHooks: true, paranoid: !isForceToUpdate }))[0]
     } catch (error) {
-      console.error(error)
       throw new Error(`Error updating item with id ${id}`)
     }
   }
@@ -47,7 +47,6 @@ export abstract class GenericRepository<T extends Model<T>> implements IWrite<T>
       if (findOptions) return await this.model.findOne(findOptions)
       return await this.model.findOne()
     } catch (error) {
-      console.error(error)
       throw new Error('Error fetching all items')
     }
   }
@@ -69,12 +68,11 @@ export abstract class GenericRepository<T extends Model<T>> implements IWrite<T>
       const { count, rows } = await this.model.findAndCountAll(options)
       return { rows, count, totalPages: Math.ceil(count / options.limit!) }
     } catch (error) {
-      console.error(error)
       throw new Error('Error fetching all items')
     }
   }
 
-  async delete(options: FindOptions<any>): Promise<number> {
+  async delete(options: FindOptions): Promise<number> {
     return await this.model.destroy(options ?? {})
   }
 }

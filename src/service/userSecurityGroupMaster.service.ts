@@ -6,7 +6,12 @@ import { IWriteRepository, IReadRepository, IDeleteRepository } from '../core/IG
 import { TPaginationData } from '../types/TPaginationData.type'
 
 @Service()
-export class UserSecurityGroupMasterService implements IWriteRepository<UserSecurityGroupMaster>, IReadRepository<UserSecurityGroupMaster>, IDeleteRepository<UserSecurityGroupMaster> {
+export class UserSecurityGroupMasterService
+  implements
+    IWriteRepository<UserSecurityGroupMaster>,
+    IReadRepository<UserSecurityGroupMaster>,
+    IDeleteRepository<UserSecurityGroupMaster>
+{
   constructor(public repositoryInstance: UserSecurityGroupMasterRepository) {}
   async deleteRecord(option?: FindOptions): Promise<number> {
     return this.repositoryInstance.delete(option ?? {})

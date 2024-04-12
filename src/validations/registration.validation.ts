@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body } from 'express-validator'
 
 export const ValidationForRegistration = [
   body('email').isEmail().withMessage('Email must be valid'),
@@ -7,4 +7,4 @@ export const ValidationForRegistration = [
     .withMessage(
       'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character',
     ),
-  ]
+]
