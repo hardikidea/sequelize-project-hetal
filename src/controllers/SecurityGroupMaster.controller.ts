@@ -6,6 +6,7 @@ import { SecurityGroupMasterService } from '@service/securityGroupMaster.service
 import { CustomError } from '@utils/CustomError'
 import { ValidateRequests } from '@core/validation'
 import { ValidationForCreateSecurityGroup, ValidationForId, ValidationForPagination } from '@validations/index'
+import { AuthenticateMiddleware } from '@middlewares/auth.middleware'
 
 @Service()
 export class SecurityGroupMasterController {
@@ -17,11 +18,11 @@ export class SecurityGroupMasterController {
   }
 
   initRoutes(): void {
-    this.router.get('/', ValidationForPagination, ValidateRequests, this.fetchAll)
-    this.router.get('/:id', ValidationForId, ValidateRequests, this.fetchById)
-    this.router.post('/', ValidationForCreateSecurityGroup, ValidateRequests, this.create)
-    this.router.put('/:id', ValidationForId, ValidateRequests, this.update)
-    this.router.delete('/:id', ValidationForId, ValidateRequests, this.removeById)
+    this.router.get('/', AuthenticateMiddleware , ValidationForPagination, ValidateRequests, this.fetchAll)
+    this.router.get('/:id', AuthenticateMiddleware , ValidationForId, ValidateRequests, this.fetchById)
+    this.router.post('/', AuthenticateMiddleware , ValidationForCreateSecurityGroup, ValidateRequests, this.create)
+    this.router.put('/:id', AuthenticateMiddleware , ValidationForId, ValidateRequests, this.update)
+    this.router.delete('/:id', AuthenticateMiddleware , ValidationForId, ValidateRequests, this.removeById)
   }
 
   create = async (request: Request, response: Response, next: NextFunction) => {

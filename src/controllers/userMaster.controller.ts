@@ -8,6 +8,7 @@ import { ValidateRequests } from '@core/validation'
 import { ValidationForCreateSecurityGroup, ValidationForId, ValidationForPagination } from '@validations/index'
 import { Container } from 'typedi'
 import { UserTokenMasterController } from './userTokenMaster.controller'
+import { AuthenticateMiddleware } from '@middlewares/auth.middleware'
 
 @Service()
 export class UserMasterController {
@@ -20,11 +21,11 @@ export class UserMasterController {
 
   initRoutes(): void {
     this.initUserTokenRoutes()
-    this.router.get('/', ValidationForPagination, ValidateRequests, this.fetchAll)
-    this.router.get('/:id', ValidationForId, ValidateRequests, this.fetchById)
-    this.router.post('/', ValidationForCreateSecurityGroup, ValidateRequests, this.create)
-    this.router.put('/:id', ValidationForId, ValidateRequests, this.update)
-    this.router.delete('/:id', ValidationForId, ValidateRequests, this.removeById)
+    this.router.get('/', AuthenticateMiddleware , ValidationForPagination, ValidateRequests, this.fetchAll)
+    this.router.get('/:id', AuthenticateMiddleware , ValidationForId, ValidateRequests, this.fetchById)
+    this.router.post('/', AuthenticateMiddleware , ValidationForCreateSecurityGroup, ValidateRequests, this.create)
+    this.router.put('/:id', AuthenticateMiddleware , ValidationForId, ValidateRequests, this.update)
+    this.router.delete('/:id', AuthenticateMiddleware , ValidationForId, ValidateRequests, this.removeById)
   }
 
   initUserTokenRoutes(): void {

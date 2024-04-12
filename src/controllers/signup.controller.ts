@@ -9,7 +9,7 @@ import { UserTokenMasterService } from '@service/userTokenMaster.service'
 import { v4 as uuid } from 'uuid'
 import { JWTPayLoad } from 'types/jwt.payload.type'
 import { CustomError } from '@utils/CustomError'
-const jwt = require('jsonwebtoken')
+import { generateToken } from '@utils/jwt.utils'
 
 @Service()
 export class SignupController extends BaseController {
@@ -59,12 +59,8 @@ export class SignupController extends BaseController {
             token: uuid(),
             tokenType: 1,
           })
-          const jwtBody: JWTPayLoad = { name: userInformation.email, sessionId: userTokenCreated.token }
-
-          const JWTToken = jwt.sign(jwtBody, 'process.env.JWT_SECRET', {
-            subject: userTokenCreated.token,
-            expiresIn: `${process.env.JWT_EXPIRATION_DAYS || 5} days`,
-          })
+          const jwtBodyPayload: JWTPayLoad = { name: userInformation.email, sessionId: userTokenCreated.token }
+          const JWTToken = generateToken(jwtBodyPayload)
 
           response.cookie('permission', JWTToken, {
             path: '/',

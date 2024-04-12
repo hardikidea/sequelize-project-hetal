@@ -1,13 +1,15 @@
 // src/utils/jwt.utils.ts
 import jwt from 'jsonwebtoken'
+import { JWTPayLoad } from 'types/jwt.payload.type'
 
-const secretKey = process.env.JWT_SECRET!
 
-export const generateToken = (userId: number): string => {
-  const payload = { userId }
-  return jwt.sign(payload, secretKey, { expiresIn: '1h' })
+export const generateToken = (payLoad: JWTPayLoad): string => {
+  return jwt.sign(payLoad, process.env.JWT_SECRET!, {
+    subject: payLoad.sessionId,
+    expiresIn: `${process.env.JWT_EXPIRATION_DAYS || 5} days`,
+  })
 }
 
 export const verifyToken = (token: string): jwt.JwtPayload | string => {
-  return jwt.verify(token, secretKey)
+  return jwt.verify(token, process.env.JWT_SECRET!)
 }
