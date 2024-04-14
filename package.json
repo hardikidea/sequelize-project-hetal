@@ -1,9 +1,10 @@
 {
-  "name": "sequelize-project-hetal",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
   "main": "index.ts",
   "scripts": {
+    "install": "npm install",
     "build": "tsc && tsc-alias",
     "format": "prettier --write .",
     "pre-commit": "eslint 'src/**/*.{js,ts}' --fix && prettier --write 'src/**/*.{js,ts,json,css,md}'",
@@ -19,7 +20,8 @@
     "test": "jest",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "prettier": "prettier --write \"**/*.{ts,tsx,json,css,md}\""
+    "prettier": "prettier --write \"**/*.{ts,tsx,json,css,md}\"",
+    "start": "env-cmd -f .env.development ts-node src/index.ts"
   },
   "keywords": [],
   "author": "",

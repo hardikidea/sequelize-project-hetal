@@ -1,5 +1,5 @@
 import logger from '../../utils/logger'
-import config from '../config/config'
+import config from './config'
 
 const env: string = process.env.NODE_ENV || 'development'
 const dbConfig = config[env]
